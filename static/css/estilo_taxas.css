@@ -1,0 +1,437 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --azul: #2165f5;
+    --azul-hover: #174fc7;
+    --texto: #12377c;
+    --cinza: #8294b5;
+    --fundo: #f2f5fa;
+    --borda: #e0e8f5;
+    --branco: #ffffff;
+}
+
+html {
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    width: 100%;
+    min-height: 100vh;
+    font-family: 'Inter', Arial, sans-serif;
+    color: var(--texto);
+    background: var(--fundo);
+}
+
+.menu {
+    width: 100%;
+    height: 82px;
+    min-height: 82px;
+    padding: 10px 5%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    background: var(--branco);
+    border-bottom: 1px solid #dce2eb;
+    box-shadow: 0 2px 5px rgba(20, 40, 70, 0.06);
+}
+
+.marca {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.marca-logo {
+    display: block;
+    width: 170px;
+    max-height: 62px;
+    height: auto;
+    object-fit: contain;
+    object-position: left center;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 28px;
+}
+
+.menu a {
+    position: relative;
+    padding: 8px 0;
+    color: #16366e;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.menu a:hover {
+    color: var(--azul);
+}
+
+.menu a.ativo {
+    color: var(--texto);
+    font-weight: 800;
+}
+
+.menu a.ativo::after {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--azul);
+}
+
+.pagina {
+    width: calc(100% - 64px);
+    max-width: 1100px;
+    margin: 28px auto 24px;
+}
+
+
+.cabecalho-pagina {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.icone-taxa {
+    width: 54px;
+    height: 54px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0;
+}
+
+.icone-taxa img {
+    display: block;
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+    background: transparent;
+}
+
+.cabecalho-pagina {
+    margin-left: 120px;
+}
+
+.cabecalho-pagina h1 {
+    margin-bottom: 4px;
+    color: var(--texto);
+    font-size: 20px;
+    line-height: 1.3;
+    font-weight: 700;
+}
+
+.cabecalho-pagina p {
+    color: var(--cinza);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.mensagens {
+    width: 100%;
+    max-width: 850px;
+    margin: 0 auto 16px;
+}
+
+.mensagem {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.mensagem.sucesso {
+    color: #17683a;
+    background: #e7f7ed;
+    border: 1px solid #bce8ca;
+}
+
+.mensagem.erro {
+    color: #a92c2c;
+    background: #fff0f0;
+    border: 1px solid #f3c5c5;
+}
+
+.cartao {
+    width: 100%;
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 25px 32px;
+    background: var(--branco);
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 2px 8px rgba(25, 50, 80, 0.02);
+}
+
+.cartao h2 {
+    margin-bottom: 22px;
+    color: var(--texto);
+    font-size: 23px;
+    font-weight: 700;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 20px;
+}
+
+.campo label {
+    color: var(--texto);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.campo input {
+    width: 100%;
+    height: 46px;
+    padding: 0 14px;
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    background: var(--branco);
+    color: #243b60;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.entrada-sufixo {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.entrada-sufixo input {
+    padding-right: 45px;
+}
+
+.entrada-sufixo span {
+    position: absolute;
+    right: 18px;
+    color: var(--cinza);
+    font-size: 15px;
+}
+
+.botao-salvar {
+    display: block;
+    width: 84%;
+    min-height: 46px;
+    margin: 24px auto 0;
+    padding: 0 20px;
+    border: none;
+    border-radius: 12px;
+    background: var(--azul);
+    color: var(--branco);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.botao-salvar:hover {
+    background: var(--azul-hover);
+}
+
+@media (max-width: 1024px) {
+    .menu {
+        padding: 12px 3%;
+        gap: 18px;
+    }
+
+    .marca-logo {
+        width: 140px;
+    }
+
+    .menu a {
+        font-size: 12px;
+    }
+
+    .pagina {
+        width: calc(100% - 40px);
+        max-width: 900px;
+    }
+
+    .cabecalho-pagina {
+        margin-left: 30px;
+    }
+
+    .cartao {
+        padding: 25px;
+    }
+}
+
+.botao-voltar {
+    margin-left: 120px;
+    margin-top: 15px;
+    padding: 12px 250px;
+    margin-right: 10px;
+    background-color: #D1E3FF;
+    color: #1A67F5;
+    border: 1px solid #1A67F5;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.botao-voltar:hover {
+    background-color: #B9D5FF;
+}
+
+@media (max-width: 768px) {
+    .menu {
+        height: auto;
+        min-height: 75px;
+        padding: 15px 20px;
+        flex-wrap: wrap; 
+        justify-content: center;
+        gap: 12px 20px;
+    }
+
+    .marca {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .marca-logo {
+        width: 135px;
+        max-height: 50px;
+        object-position: center;
+    }
+
+    .menu {
+        justify-content: center;
+    }
+
+    .menu a {
+        font-size: 11px;
+        padding: 6px 0;
+    }
+
+    .pagina {
+        width: calc(100% - 32px);
+        margin: 24px auto;
+    }
+
+    .cabecalho-pagina {
+        margin-left: 0;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .icone-taxa {
+        width: 48px;
+        height: 48px;
+    }
+
+    .icone-taxa img {
+        width: 52px;
+        height: 52px;
+    }
+
+    .cabecalho-pagina h1 {
+        font-size: 18px;
+    }
+
+    .cabecalho-pagina p {
+        font-size: 12px;
+    }
+
+    .mensagens {
+        margin-bottom: 14px;
+    }
+
+    .cartao {
+        width: 100%;
+        padding: 22px 18px;
+        border-radius: 12px;
+    }
+
+    .cartao h2 {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+
+    .campo {
+        margin-bottom: 18px;
+    }
+
+    .campo input {
+        height: 44px;
+        font-size: 14px;
+    }
+
+    .botao-salvar {
+        width: 100%;
+        min-height: 46px;
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 400px) {
+    .menu {
+        padding: 12px;
+        gap: 10px 14px;
+    }
+
+    .menu a {
+        font-size: 10px;
+    }
+
+    .pagina {
+        width: calc(100% - 24px);
+        margin-top: 20px;
+    }
+
+    .cabecalho-pagina {
+        gap: 8px;
+    }
+
+    .icone-taxa {
+        width: 40px;
+        height: 40px;
+    }
+
+    .icone-taxa img {
+        width: 44px;
+        height: 44px;
+    }
+
+    .cabecalho-pagina h1 {
+        font-size: 16px;
+    }
+
+    .cabecalho-pagina p {
+        font-size: 11px;
+    }
+
+    .cartao {
+        padding: 20px 14px;
+    }
+
+    .cartao h2 {
+        font-size: 18px;
+    }
+
+    .campo label {
+        font-size: 12px;
+    }
+
+    .campo input {
+        padding: 0 10px;
+    }
+}

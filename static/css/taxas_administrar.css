@@ -1,0 +1,368 @@
+
+/* Biblioteca de cores do CredMais */
+:root {
+    --azul-principal: #1A67F5;
+    --azul-escuro: #123574;
+    --azul-claro: #D1E3FF;
+    --verde: #42BF7A;
+    --vermelho: #FF4D4D;
+    --branco: #FFFFFF;
+    --fundo: #F3F6FA;
+    --cinza-texto: #7186AA;
+}
+
+/* Configurações gerais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Fundo da página e fonte */
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--fundo);
+    color: #000000;
+}
+
+/* Cabeçalho com a logo e o menu */
+header {
+    min-height: 88px;
+    background-color: var(--branco);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 3%;
+    border-bottom: 3px solid #DCE1E8;
+}
+
+/* Área da logo */
+.area-logo img {
+    width: 175px;
+    height: auto;
+}
+
+/* Menu de navegação */
+.menu {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Itens do menu */
+.item-menu {
+    color: var(--azul-escuro);
+    font-size: 14px;
+    font-weight: bold;
+    margin-left: 20px;
+    padding: 10px 0;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* Página atual do menu */
+.pagina-atual {
+    border-bottom: 3px solid var(--azul-principal);
+}
+
+/* Conteúdo principal */
+main {
+    padding: 45px 6%;
+}
+
+/* Área do título e do botão */
+.cabecalho-taxas {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 56px;
+}
+
+/* Título com o ícone */
+.titulo-pagina {
+    display: flex;
+    align-items: center;
+}
+
+/* Imagem do ícone da página */
+.icone-taxas img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+/* Título principal */
+.texto-titulo h1 {
+    color: var(--azul-escuro);
+    font-size: 23px;
+    margin-bottom: 3px;
+}
+
+/* Descrição do título */
+.texto-titulo p {
+    color: var(--cinza-texto);
+    font-size: 14px;
+}
+
+/* Botão de cadastrar */
+.botao-cadastrar {
+    background-color: var(--azul-principal);
+    color: var(--branco);
+    border: none;
+    border-radius: 9px;
+    padding: 17px 15px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Título da lista */
+.lista-taxas h2 {
+    color: var(--azul-escuro);
+    font-size: 23px;
+    margin: 0 0 18px 6px;
+}
+
+/* Cabeçalho da lista de taxas */
+.linha-titulo {
+    display: flex;
+    align-items: center;
+    background-color: var(--azul-claro);
+    border-radius: 14px 14px 0 0;
+    min-height: 64px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Espaçamento das colunas do cabeçalho */
+.linha-titulo div {
+    width: 28%;
+    text-align: center;
+}
+
+/* Coluna das ações */
+.linha-titulo div:last-child {
+    width: 44%;
+}
+
+/* Linhas com as taxas */
+.linha-taxa {
+    display: flex;
+    align-items: center;
+    min-height: 68px;
+    background-color: var(--branco);
+    border-bottom: 1px solid var(--azul-claro);
+}
+
+/* Colunas com os valores */
+.linha-taxa > div {
+    width: 28%;
+    text-align: center;
+    font-size: 16px;
+}
+
+/* Área dos botões das taxas */
+.linha-taxa .botoes-acoes {
+    width: 44%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+/* Botão editar */
+.botao-editar {
+    width: 88px;
+    padding: 5px;
+    color: var(--azul-principal);
+    background-color: var(--azul-claro);
+    border: 1px solid var(--azul-principal);
+    border-radius: 9px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* Botão excluir da lista */
+.botao-excluir {
+    width: 88px;
+    padding: 6px;
+    color: var(--branco);
+    background-color: var(--azul-principal);
+    border: none;
+    border-radius: 9px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* Fundo atrás da janela de confirmação */
+.fundo-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    z-index: 1000;
+}
+
+/* Caixa branca da janela */
+.modal {
+    background-color: #FFFFFF;
+    width: 100%;
+    max-width: 420px;
+    padding: 30px;
+    border-radius: 16px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+/* Área da imagem: não cria outro círculo */
+.icone-modal {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+}
+
+/* Imagem original da lixeira com o círculo azul-claro */
+.icone-modal img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+}
+
+/* Título da janela */
+.modal h2 {
+    color: #000000;
+    font-size: 21px;
+    margin-bottom: 15px;
+}
+
+/* Informações da taxa selecionada */
+.modal p {
+    color: var(--cinza-texto);
+    font-size: 15px;
+    margin-bottom: 25px;
+}
+
+/* Área dos botões da janela */
+.botoes-modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Botões de excluir e cancelar */
+.botao-confirmar,
+.botao-cancelar {
+    width: 120px;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 0 6px;
+}
+
+/* Botão confirmar exclusão */
+.botao-confirmar {
+    background-color: var(--azul-principal);
+    color: var(--branco);
+    border: none;
+}
+
+/* Botão cancelar */
+.botao-cancelar {
+    background-color: var(--branco);
+    color: var(--azul-principal);
+    border: 1px solid var(--azul-principal);
+}
+
+/* Ajustes para telas menores */
+@media (max-width: 800px) {
+
+    header {
+        padding: 20px;
+        flex-direction: column;
+    }
+
+    .menu {
+        justify-content: center;
+        margin-top: 15px;
+    }
+
+    .item-menu {
+        margin: 8px 10px;
+    }
+
+    main {
+        padding: 30px 4%;
+    }
+
+    .cabecalho-taxas {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 40px;
+    }
+
+    .botao-cadastrar {
+        margin-top: 20px;
+    }
+
+    .texto-titulo h1 {
+        font-size: 19px;
+    }
+
+    .lista-taxas h2 {
+        font-size: 20px;
+    }
+
+    .linha-titulo div,
+    .linha-taxa > div {
+        width: 25%;
+        font-size: 13px;
+    }
+
+    .linha-titulo div:last-child,
+    .linha-taxa .botoes-acoes {
+        width: 50%;
+    }
+
+    .botao-editar,
+    .botao-excluir {
+        width: 65px;
+        font-size: 12px;
+    }
+}
+
+/* Ajustes da janela em celulares */
+@media (max-width: 480px) {
+
+    .modal {
+        padding: 25px 18px;
+    }
+
+    .modal h2 {
+        font-size: 19px;
+    }
+
+    .botoes-modal {
+        flex-wrap: wrap;
+    }
+
+    .botao-confirmar,
+    .botao-cancelar {
+        width: 110px;
+        margin: 5px;
+    }
+}

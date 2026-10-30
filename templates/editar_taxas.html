@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar taxa | CredMais</title>
+    <link rel="icon" type="image/png" href="../static/uploads/LogoSoloCrediMais.png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo_taxas.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+</head>
+    <body>
+
+    {% set pagina_ativa = 'taxas' %}
+<header class="cabecalho-padrao">
+    <a href="{{ url_for('dashboard') }}" class="cabecalho-logo">
+        <img src="{{ url_for('static', filename='uploads/LogoSoloCrediMais.png') }}" alt="Logo CredMais" class="cabecalho-simbolo">
+        <span class="cabecalho-texto">
+            <span class="cabecalho-nome"><span class="nome-azul">Cred</span><span class="nome-verde">Mais</span></span>
+            <span class="cabecalho-slogan">Gestão de crédito para<br>pequenos negócios</span>
+        </span>
+    </a>
+    <nav class="cabecalho-menu">
+        <a href="{{ url_for('dashboard') }}" class="{% if pagina_ativa == 'dashboard' %}ativo{% endif %}">Dashboard</a>
+        <a href="{{ url_for('perfil') }}" class="{% if pagina_ativa == 'perfil' %}ativo{% endif %}">Perfil</a>
+        {% if eh_admin %}
+        <a href="{{ url_for('listar_taxas') }}" class="{% if pagina_ativa == 'taxas' %}ativo{% endif %}">Taxas</a>
+        {% endif %}
+        <a href="{{ url_for('simulacao') }}" class="{% if pagina_ativa == 'simulacao' %}ativo{% endif %}">Simulação</a>
+        <a href="{{ url_for('historico_emprestimos') }}" class="{% if pagina_ativa == 'emprestimos' %}ativo{% endif %}">Empréstimos</a>
+        <a href="{{ url_for('movimentacoes') }}" class="{% if pagina_ativa == 'movimentacoes' %}ativo{% endif %}">Movimentações</a>
+    </nav>
+</header>
+
+        <main class="pagina">
+            <section class="cabecalho-pagina">
+
+                <div class="icone-taxa">
+                    <img src="{{ url_for('static', filename='uploads/icone-taxa.png') }}" alt="Ícone de taxa">
+                </div>
+
+                <div>
+                    <h1>Editar taxa</h1>
+                    <p>Preencha o campo para editar sua taxa.</p>
+                </div>
+            </section>
+
+            {% with mensagens = get_flashed_messages(with_categories=true) %}
+                {% if mensagens %}
+                    <div class="mensagens">
+                        {% for categoria, mensagem in mensagens %}
+                            <p class="mensagem {{ categoria }}">
+                                {{ mensagem }}
+                            </p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <section class="cartao">
+
+                <h2>Editar</h2>
+
+                <form method="POST" action="{{ url_for('editar_taxa') }}">
+
+                    <input type="hidden" name="id_taxa" value="{{ taxa.id }}">
+
+                    <div class="campo">
+                        <label for="ano">Ano/Exercício</label>
+                        <input id="ano" name="ano" type="number" min="1900" max="2100" value="{{ taxa.ano }}" required>
+                    </div>
+
+                    <div class="campo campo-juros">
+                        <label for="juros">Taxa de juros mensal</label>
+
+                        <div class="entrada-sufixo">
+                            <input id="juros" name="juros" type="number" min="0" max="200" value="{{ taxa.juros }}" required>
+                            <span>%</span>
+                        </div>
+                    </div>
+
+                    <button class="botao-salvar" type="submit">Salvar alterações</button>
+
+                    <button class="botao-voltar" type="button" onclick="window.location.href='{{ url_for('listar_taxas') }}'">Voltar </button>
+
+                </form>
+            </section>
+        </main>
+    </body>
+</html>

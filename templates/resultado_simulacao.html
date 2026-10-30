@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado da Simulação | CredMais</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/resultado_simulacao.css') }}">
+</head>
+<body>
+{% set pagina_ativa = 'simulacao' %}
+<header class="cabecalho-padrao">
+    <a href="{{ url_for('dashboard') }}" class="cabecalho-logo">
+        <img src="{{ url_for('static', filename='uploads/LogoSoloCrediMais.png') }}" alt="Logo CredMais" class="cabecalho-simbolo">
+        <span class="cabecalho-texto">
+            <span class="cabecalho-nome"><span class="nome-azul">Cred</span><span class="nome-verde">Mais</span></span>
+            <span class="cabecalho-slogan">Gestão de crédito para<br>pequenos negócios</span>
+        </span>
+    </a>
+    <nav class="cabecalho-menu">
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('perfil') }}">Perfil</a>
+        {% if eh_admin %}<a href="{{ url_for('listar_taxas') }}">Taxas</a>{% endif %}
+        <a href="{{ url_for('simulacao') }}" class="ativo">Simulação</a>
+        <a href="{{ url_for('historico_emprestimos') }}">Empréstimos</a>
+        <a href="{{ url_for('movimentacoes') }}">Movimentações</a>
+    </nav>
+</header>
+<main class="conteudo">
+    <section class="titulo-pagina">
+        <div class="icone-titulo"><img src="{{ url_for('static', filename='uploads/icone-de-calculadora.png') }}" alt="Calculadora"></div>
+        <div class="titulo-texto"><h1>Resultado da Simulação</h1><p>Confira as condições e o comprometimento da sua renda.</p></div>
+    </section>
+    {% if erro %}<div class="mensagem-erro">{{ erro }}</div>{% endif %}
+    {% if resultado %}
+    <section class="painel">
+        <div class="resumo">
+            <article class="cartao-resumo"><div class="informacao-cartao"><h2>Valor solicitado</h2><strong>R$ {{ resultado.valor }}</strong></div><div class="icone-resumo"><img src="{{ url_for('static', filename='uploads/icone-de-moedas.png') }}" alt="Dinheiro"></div></article>
+            <article class="cartao-resumo"><div class="informacao-cartao"><h2>Número de parcelas</h2><strong>{{ resultado.parcelas }} meses</strong></div><div class="icone-resumo"><img src="{{ url_for('static', filename='uploads/icone-de-calendario.png') }}" alt="Calendário"></div></article>
+            <article class="cartao-resumo"><div class="informacao-cartao"><h2>Total a pagar</h2><strong>R$ {{ resultado.total }}</strong></div><div class="icone-resumo"><img src="{{ url_for('static', filename='uploads/icone-de-porcentagem.png') }}" alt="Total"></div></article>
+        </div>
+        <section class="detalhes">
+            <h2 class="titulo-detalhes">Detalhes da simulação</h2>
+            <div class="resultado-principal">
+                <div class="parcela"><h3>Parcela mensal</h3><strong>R$ {{ resultado.valor_parcela }}</strong></div>
+                <div class="separador"></div>
+                <div class="informacoes">
+                    <div class="linha"><span>Taxa de juros mensal</span><strong>{{ resultado.juros }}%</strong></div>
+                    <div class="linha"><span>Comprometimento da renda</span><strong>{{ resultado.comprometimento }}%</strong></div>
+                    <div class="linha"><span>Risco</span><strong class="{% if resultado.risco == 'Alto' %}risco-alto{% elif resultado.risco == 'Médio' %}risco-medio{% else %}risco-baixo{% endif %}">{{ resultado.risco }} risco</strong></div>
+                </div>
+            </div>
+        </section>
+        {% if resultado.alto_risco %}
+        <section class="aviso-alto-risco"><div class="texto-alerta"><h2>Procedimento de alto risco</h2><p>{{ resultado.mensagem_risco }}</p></div></section>
+        {% endif %}
+        <div class="botoes">
+            {% if not resultado.alto_risco %}
+            <form action="{{ url_for('emprestimo_realizado') }}" method="POST">
+                <input type="hidden" name="cliente" value="{{ session.get('usuario_nome', 'Cliente') }}">
+                <input type="hidden" name="valor" value="{{ resultado.valor_original }}">
+                <input type="hidden" name="parcelas" value="{{ resultado.parcelas }}">
+                <input type="hidden" name="valor_parcela" value="{{ resultado.valor_parcela_original }}">
+                <button type="submit" class="botao-realizar">Realizar empréstimo</button>
+            </form>
+            {% else %}<button type="button" class="botao-realizar desabilitado" disabled>Realizar empréstimo</button>{% endif %}
+            <a href="{{ url_for('simulacao') }}" class="botao-cancelar">Nova simulação</a>
+        </div>
+    </section>
+    {% endif %}
+</main>
+</body>
+</html>

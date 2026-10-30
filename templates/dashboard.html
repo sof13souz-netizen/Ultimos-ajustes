@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CredMais</title>
+    <link rel="icon" type="image/png" href="../static/uploads/LogoSoloCrediMais.png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_dashboard.css') }}">
+
+</head>
+
+<body>
+
+    <!-- CABEÇALHO -->
+    {% set pagina_ativa = 'dashboard' %}
+<header class="cabecalho-padrao">
+    <a href="{{ url_for('dashboard') }}" class="cabecalho-logo">
+        <img src="{{ url_for('static', filename='uploads/LogoSoloCrediMais.png') }}" alt="Logo CredMais" class="cabecalho-simbolo">
+        <span class="cabecalho-texto">
+            <span class="cabecalho-nome"><span class="nome-azul">Cred</span><span class="nome-verde">Mais</span></span>
+            <span class="cabecalho-slogan">Gestão de crédito para<br>pequenos negócios</span>
+        </span>
+    </a>
+    <nav class="cabecalho-menu">
+        <a href="{{ url_for('dashboard') }}" class="{% if pagina_ativa == 'dashboard' %}ativo{% endif %}">Dashboard</a>
+        <a href="{{ url_for('perfil') }}" class="{% if pagina_ativa == 'perfil' %}ativo{% endif %}">Perfil</a>
+        {% if eh_admin %}
+        <a href="{{ url_for('listar_taxas') }}" class="{% if pagina_ativa == 'taxas' %}ativo{% endif %}">Taxas</a>
+        {% endif %}
+        <a href="{{ url_for('simulacao') }}" class="{% if pagina_ativa == 'simulacao' %}ativo{% endif %}">Simulação</a>
+        <a href="{{ url_for('historico_emprestimos') }}" class="{% if pagina_ativa == 'emprestimos' %}ativo{% endif %}">Empréstimos</a>
+        <a href="{{ url_for('movimentacoes') }}" class="{% if pagina_ativa == 'movimentacoes' %}ativo{% endif %}">Movimentações</a>
+    </nav>
+</header>
+
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main>
+
+        <!-- BOAS-VINDAS -->
+        <div class="inicio">
+
+            <div>
+                <h1>Olá, {{ session["usuario_nome"] }}!</h1>
+                <p>Seja bem-vindo ao CredMais.</p>
+            </div>
+
+
+            <!-- DATA ATUAL -->
+            <div class="data">
+                <p> Hoje, {{ data_atual }}</p>
+            </div>
+
+
+
+        </div>
+
+
+        <!-- CARDS DE INFORMAÇÕES -->
+        <div class="cards">
+
+            <!-- RENDA -->
+            <div class="card">
+
+                <div class="icone">
+                    <img src="/dinheiro" alt="Ícone de dinheiro">
+                </div>
+
+               <div>
+                    <h3>Renda Mensal Líquida</h3>
+                    <h2>R$ {{ renda_mensal_liquida }}</h2>
+                    <p>Receita de R$ {{ receita_total }}</p>
+               </div>
+
+            </div>
+
+
+            <!-- COMPROMETIMENTO -->
+            <div class="card">
+
+                <div class="icone">
+                    <img src="/check" alt="Ícone de comprometimento">
+                </div>
+
+                <div>
+                    <h3>Comprometimento Anual</h3>
+                    <h2>R$ {{ comprometimento_anual }}</h2>
+                    <p>{% if percentual_comprometimento_anual != '-' %}{{ percentual_comprometimento_anual }}% da renda anual estimada{% else %}Renda anual indisponível{% endif %}</p>
+                </div>
+
+            </div>
+
+
+            <!-- PARCELAS FUTURAS -->
+            <div class="card">
+
+                <div class="icone">
+                    <img src="/quadrado" alt="Ícone de parcelas">
+                </div>
+
+                <div>
+                    <h3>Parcelas Futuras</h3>
+                    <h2>R$ {{ parcelas_futuras }}</h2>
+                    <p>{{ quantidade_parcelas_futuras }} parcela(s) pendente(s)</p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ÁREA DE AÇÕES -->
+        <div class="acoes">
+            <div class="coluna-esquerda">
+                <div class="card-acao">
+                    <div class="icone"><img src="/calculadora" alt="Ícone de calculadora"></div>
+                    <div class="conteudo-acao">
+                        <h2>Simule um novo crédito</h2>
+                        <p>Veja a parcela, o comprometimento da renda e o risco antes de contratar.</p>
+                        <button type="button" onclick="window.location.href='{{ url_for('simulacao') }}'">Simular empréstimo</button>
+                    </div>
+                </div>
+                <div class="card-acao">
+                    <div class="icone"><img src="/escudo" alt="Ícone de escudo"></div>
+                    <div class="conteudo-acao">
+                        <h2>Situação financeira</h2>
+                        <p>Veja suas receitas, despesas e movimentações.</p>
+                        <button type="button" onclick="window.location.href='{{ url_for('movimentacoes') }}'">Navegar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="coluna-direita">
+                <div class="card-parcela">
+                    <div class="icone"><img src="/predio" alt="Ícone de próxima parcela"></div>
+                    <div>
+                        <h3>Próxima Parcela</h3>
+                        <h2>R$ {{ proxima_parcela_valor }}</h2>
+                        <p>{{ proxima_parcela_data }}</p>
+                    </div>
+                </div>
+                <div class="card-sair" onclick="abrirModal()" role="button" tabindex="0"
+                     onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirModal(); }">
+                    <div>
+                        <div class="icone"><img src="/sair" alt="Ícone de sair"></div>
+                        <p>Sair da Conta</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- POP-UP DE CONFIRMAÇÃO DE SAÍDA -->
+    <div
+        class="fundo-modal"
+        id="modalSair"
+        style="display: none;"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tituloModalSair"
+    >
+
+        <div class="modal">
+
+            <!-- ÍCONE -->
+            <div class="icone-sair">
+
+                <img
+                    src="{{ url_for('static', filename='uploads/sair.png') }}"
+                    alt="Ícone de sair"
+                >
+
+            </div>
+
+
+            <!-- MENSAGEM -->
+            <h2 id="tituloModalSair">
+                Deseja sair de sua conta?
+            </h2>
+
+            <p>Suas informações serão mantidas.</p>
+
+
+            <!-- BOTÕES -->
+            <div class="botoes-modal">
+
+                <!-- CONFIRMAR SAÍDA -->
+                <button
+                    type="button"
+                    class="botao-sair"
+                    onclick="sairDaConta()"
+                >
+                    Sair
+                </button>
+
+                <!-- CANCELAR SAÍDA -->
+                <button
+                    type="button"
+                    class="botao-cancelar"
+                    onclick="fecharModal()"
+                >
+                    Cancelar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- JAVASCRIPT -->
+    <script>
+
+        // Abre o pop-up de confirmação
+        function abrirModal() {
+            const modal = document.getElementById("modalSair");
+
+            modal.style.display = "flex";
+        }
+
+
+        // Fecha o pop-up
+        function fecharModal() {
+            const modal = document.getElementById("modalSair");
+
+            modal.style.display = "none";
+        }
+
+
+        // Fecha o pop-up ao clicar fora da caixa
+        document.getElementById("modalSair").addEventListener("click", function(event) {
+            if (event.target === this) {
+                fecharModal();
+            }
+        });
+
+
+        // Fecha o pop-up ao pressionar a tecla Escape
+        document.addEventListener("keydown", function(event) {
+            if (event.key === "Escape") {
+                fecharModal();
+            }
+        });
+
+
+        // Confirma a saída e chama a rota de logout do Flask
+        function sairDaConta() {
+            window.location.assign("{{ url_for('logout') }}");
+        }
+
+    </script>
+
+</body>
+
+</html>

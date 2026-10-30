@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Editar movimentação | CredMais</title>
+    <link rel="icon" type="image/png" href="../static/uploads/LogoSoloCrediMais.png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo_movimentacoes.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+</head>
+
+<body>
+    {% set pagina_ativa = 'movimentacoes' %}
+<header class="cabecalho-padrao">
+    <a href="{{ url_for('dashboard') }}" class="cabecalho-logo">
+        <img src="{{ url_for('static', filename='uploads/LogoSoloCrediMais.png') }}" alt="Logo CredMais" class="cabecalho-simbolo">
+        <span class="cabecalho-texto">
+            <span class="cabecalho-nome"><span class="nome-azul">Cred</span><span class="nome-verde">Mais</span></span>
+            <span class="cabecalho-slogan">Gestão de crédito para<br>pequenos negócios</span>
+        </span>
+    </a>
+    <nav class="cabecalho-menu">
+        <a href="{{ url_for('dashboard') }}" class="{% if pagina_ativa == 'dashboard' %}ativo{% endif %}">Dashboard</a>
+        <a href="{{ url_for('perfil') }}" class="{% if pagina_ativa == 'perfil' %}ativo{% endif %}">Perfil</a>
+        {% if eh_admin %}
+        <a href="{{ url_for('listar_taxas') }}" class="{% if pagina_ativa == 'taxas' %}ativo{% endif %}">Taxas</a>
+        {% endif %}
+        <a href="{{ url_for('simulacao') }}" class="{% if pagina_ativa == 'simulacao' %}ativo{% endif %}">Simulação</a>
+        <a href="{{ url_for('historico_emprestimos') }}" class="{% if pagina_ativa == 'emprestimos' %}ativo{% endif %}">Empréstimos</a>
+        <a href="{{ url_for('movimentacoes') }}" class="{% if pagina_ativa == 'movimentacoes' %}ativo{% endif %}">Movimentações</a>
+    </nav>
+</header>
+
+    <div class="pagina-movimentacao">
+        <div class="titulo-pagina">
+            <img
+                src="{{ url_for('static', filename='uploads/icone-calculadora.png') }}"
+                alt="Calculadora"
+                class="icone-calculadora"
+            >
+
+            <div>
+                <h1>Editar movimentação</h1>
+                <p>Altere a descrição desta movimentação.</p>
+            </div>
+        </div>
+
+        {% for categoria_msg, mensagem in
+            get_flashed_messages(with_categories=true) %}
+            <div class="mensagem {{ categoria_msg }}">
+                {{ mensagem }}
+            </div>
+        {% endfor %}
+
+        <div class="formulario-card">
+            <form
+                action="{{ url_for('editar_movimentacao', id_mov=mov.id) }}"
+                method="POST"
+            >
+                <div class="campo">
+                    <label for="descricao">Descrição</label>
+
+                    <input
+                        type="text"
+                        id="descricao"
+                        name="descricao"
+                        value="{{ mov.descricao }}"
+                        maxlength="100"
+                        required
+                    >
+                </div>
+
+                <div class="detalhes">
+                    <div class="detalhe">
+                        <div class="detalhe-rotulo">Categoria</div>
+
+                        <div class="detalhe-valor {{ mov.classe }}">
+                            {{ mov.categoria }}
+                        </div>
+                    </div>
+
+                    <div class="detalhe">
+                        <div class="detalhe-rotulo">Classificação</div>
+
+                        <div class="detalhe-valor">
+                            {{ mov.classificacao }}
+                        </div>
+                    </div>
+
+                    <div class="detalhe">
+                        <div class="detalhe-rotulo">Valor</div>
+
+                        <div class="detalhe-valor {{ mov.classe }}">
+                            {{ mov.sinal }} R$ {{ mov.valor_texto }}
+                        </div>
+                    </div>
+
+                    <div class="detalhe">
+                        <div class="detalhe-rotulo">Data</div>
+
+                        <div class="detalhe-valor">
+                            {{ mov.data_completa }}
+                        </div>
+                    </div>
+                </div>
+
+                <p class="nota-edicao">
+                    O valor, a categoria, a classificação e a data
+                    não podem ser alterados.
+                </p>
+
+                <div class="botoes-formulario">
+                    <button
+                        type="submit"
+                        class="botao-registrar"
+                    >
+                        Salvar
+                    </button>
+
+                    <a
+                        href="{{ url_for(
+                            'visualizar_movimentacao',
+                            id_mov=mov.id
+                        ) }}"
+                        class="botao-cancelar"
+                    >
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

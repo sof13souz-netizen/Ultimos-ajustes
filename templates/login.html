@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - CredMais</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="icon" type="image/png" href="../static/uploads/LogoSoloCrediMais.png">
+</head>
+
+<body>
+
+    <div class="pagina">
+        <div class="card">
+            <div class="logo-area">
+
+                <img class="logo" src="{{ url_for('logo') }}" alt="Logo CredMais">
+
+            </div>
+
+            <div class="cabecalho">
+                <h1>Acesse sua conta</h1>
+                <p>Entre com seus dados para acessar sua conta.</p>
+            </div>
+
+           {% with mensagens = get_flashed_messages(with_categories=true) %}
+                {% if mensagens %}
+                    <div class="mensagens-lista">
+                        {% for categoria, mensagem in mensagens %}
+                            <div class="mensagens {{ 'sucesso' if categoria == 'sucesso' else 'erro' }}">
+                                <p>{{ mensagem }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('login') }}" method="POST">
+
+                <div class="campo">
+
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" placeholder="Digite seu e-mail" required>
+
+                </div>
+
+                <div class="campo">
+
+                    <label for="senha"> Senha </label>
+                    <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
+
+                </div>
+
+                <button type="submit"> Entrar </button>
+
+            </form>
+
+            <div class="links">
+
+                <p> Ainda não possui uma conta? </p>
+                <a href="{{ url_for('cadastro') }}" class="botao-criar"> Criar Conta</a>
+
+            </div>
+
+            <a href="{{ url_for('inicio') }}" class="voltar"> Voltar </a>
+
+        </div>
+    </div>
+</body>
+</html>

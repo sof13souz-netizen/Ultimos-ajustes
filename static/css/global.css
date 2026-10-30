@@ -1,0 +1,46 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root {
+  --azul: #1A67F5;
+  --azul-hover: #1456D3;
+  --azul-escuro: #0F2F73;
+  --azul-claro: #D1E3FF;
+  --verde: #40BE76;
+  --verde-hover: #2FA866;
+  --verde-claro: #DDF5E7;
+  --vermelho: #F44A4D;
+  --vermelho-claro: #FDEBEC;
+  --fundo: #F6F9FD;
+  --cinza-claro: #E6ECF4;
+  --cinza-texto: #6B7DA8;
+  --branco: #FFFFFF;
+  --borda: #DCE5F2;
+}
+* { box-sizing: border-box; }
+body { font-family: 'Inter', Arial, sans-serif; }
+button, .btn, a { transition: background-color .18s ease, color .18s ease; }
+button { cursor: pointer; }
+button:hover:not(:disabled), .btn-principal:hover { background-color: var(--azul-hover); }
+.btn-secundario:hover { background-color: var(--azul-claro); }
+.botao-verde:hover { background-color: var(--verde-hover); }
+.cabecalho-padrao {
+  width: 100%; min-height: 78px; padding: 10px 5%;
+  background: var(--branco); display: flex; align-items: center;
+  justify-content: space-between; gap: 24px; box-shadow: 0 2px 6px rgba(15,47,115,.10);
+}
+.cabecalho-logo { display:flex; align-items:center; gap:10px; text-decoration:none; flex-shrink:0; }
+.cabecalho-simbolo { display:block; width:58px; height:58px; object-fit:contain; }
+.cabecalho-texto { display:flex; flex-direction:column; }
+.cabecalho-nome { font-size:26px; font-weight:800; line-height:1; }
+.nome-azul { color:var(--azul); } .nome-verde { color:var(--verde); }
+.cabecalho-slogan { margin-top:4px; color:var(--cinza-texto); font-size:10px; line-height:1.25; }
+.cabecalho-menu { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:24px; }
+.cabecalho-menu a { padding:9px 0; color:var(--azul-escuro); text-decoration:none; font-size:14px; font-weight:600; white-space:nowrap; position:relative; }
+.cabecalho-menu a:hover, .cabecalho-menu a.ativo { color:var(--azul); }
+.cabecalho-menu a::after { content:''; display:none; position:absolute; left:0; right:0; bottom:0; height:3px; background:var(--azul); border-radius:2px; }
+.cabecalho-menu a.ativo::after { display:block; }
+@media (max-width:800px) {
+ .cabecalho-padrao { align-items:flex-start; flex-direction:column; gap:8px; padding:12px 5%; }
+ .cabecalho-menu { width:100%; justify-content:flex-start; gap:16px; overflow-x:auto; flex-wrap:nowrap; }
+ .cabecalho-menu a { font-size:12px; }
+}

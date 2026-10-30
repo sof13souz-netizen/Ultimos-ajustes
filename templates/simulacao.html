@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulação | CredMais</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/simulacao.css') }}">
+</head>
+<body>
+{% set pagina_ativa = 'simulacao' %}
+<header class="cabecalho-padrao">
+    <a href="{{ url_for('dashboard') }}" class="cabecalho-logo">
+        <img src="{{ url_for('static', filename='uploads/LogoSoloCrediMais.png') }}" alt="Logo CredMais" class="cabecalho-simbolo">
+        <span class="cabecalho-texto">
+            <span class="cabecalho-nome"><span class="nome-azul">Cred</span><span class="nome-verde">Mais</span></span>
+            <span class="cabecalho-slogan">Gestão de crédito para<br>pequenos negócios</span>
+        </span>
+    </a>
+    <nav class="cabecalho-menu">
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('perfil') }}">Perfil</a>
+        {% if eh_admin %}<a href="{{ url_for('listar_taxas') }}">Taxas</a>{% endif %}
+        <a href="{{ url_for('simulacao') }}" class="ativo">Simulação</a>
+        <a href="{{ url_for('historico_emprestimos') }}">Empréstimos</a>
+        <a href="{{ url_for('movimentacoes') }}">Movimentações</a>
+    </nav>
+</header>
+<main class="conteudo">
+    <section class="titulo-pagina">
+        <div class="icone-calculadora"><img src="{{ url_for('static', filename='uploads/icone-de-calculadora.png') }}" alt="Calculadora"></div>
+        <div class="titulo-texto">
+            <h1>Simulação de Empréstimos</h1>
+            <p>Informe seus dados para calcular as condições e o risco do empréstimo.</p>
+        </div>
+    </section>
+
+    {% if erro %}<div class="mensagem-erro">{{ erro }}</div>{% endif %}
+
+    <section class="cartao-formulario">
+        <form action="{{ url_for('simulacao') }}" method="POST">
+            <div class="campo">
+                <label for="valor">Valor do empréstimo</label>
+                <input type="text" id="valor" name="valor" inputmode="decimal" placeholder="Ex.: 10.000,00" value="{{ request.form.get('valor', '') }}" required>
+            </div>
+            <div class="campo">
+                <label for="parcelas">Número de parcelas</label>
+                <input type="number" id="parcelas" name="parcelas" min="1" max="600" step="1" placeholder="Ex.: 12" value="{{ request.form.get('parcelas', '') }}" required>
+            </div>
+            <div class="botoes">
+                <button type="submit" class="botao-simular">Simular empréstimo</button>
+                <a href="{{ url_for('dashboard') }}" class="botao-cancelar">Voltar</a>
+            </div>
+        </form>
+    </section>
+    <div class="aviso">
+        <img src="{{ url_for('static', filename='uploads/icone_informacao.png') }}" alt="" class="icone-informacao">
+        <p>A taxa de juros vem das taxas cadastradas no sistema{% if taxa %} (referência: {{ taxa.ano }}){% endif %}. O risco é calculado automaticamente com base nas suas movimentações deste mês.</p>
+    </div>
+    <section class="planejamento">
+        <div class="planejamento-titulo"><img src="{{ url_for('static', filename='uploads/icone_planejamento.png') }}" alt="" class="icone-planejamento"><h2>Classificação de risco</h2></div>
+        <p>Até 20%: risco baixo. De 21% até 35%: risco médio. Acima de 35%: risco alto.</p>
+    </section>
+</main>
+</body>
+</html>

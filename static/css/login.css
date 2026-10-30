@@ -1,0 +1,359 @@
+* { /* Seleciona todos os elementos da página */
+    margin: 0; /* Remove a margem padrão */
+    padding: 0; /* Remove o espaçamento interno padrão */
+    box-sizing: border-box; /* Faz largura e altura incluírem padding e borda */
+}
+
+:root { /* Define variáveis de cores que podem ser usadas em todo o CSS */
+    --azul: #1A67F5; /* Cor azul principal */
+    --azul-escuro: #111111; /* Cor escura para textos */
+    --azul-claro: #D1E3FF; /* Azul mais claro */
+
+    --verde: #40BE76; /* Cor verde principal */
+    --verde-claro: #DDF5E7; /* Verde mais claro */
+
+    --vermelho: #F44A4D; /* Cor vermelha principal */
+    --vermelho-claro: #FDEBEC; /* Vermelho mais claro */
+
+    --fundo: #F5F7FB; /* Cor de fundo da página */
+    --cinza-claro: #DCE5F1; /* Cinza claro para bordas */
+    --cinza-texto: #7184B0; /* Cinza usado nos textos secundários */
+    --branco: #FFFFFF; /* Cor branca */
+}
+
+html { /* Configura o elemento principal da página */
+    width: 100%; /* Ocupa toda a largura */
+    height: 100%; /* Ocupa toda a altura */
+    overflow: hidden; /* Esconde o conteúdo que ultrapassar a tela */
+}
+
+body { /* Configura o corpo da página */
+    width: 100%; /* Ocupa toda a largura */
+    height: 100vh; /* Ocupa 100% da altura da tela */
+
+    font-family: Arial, Helvetica, sans-serif; /* Define a fonte */
+
+    background: var(--fundo); /* Define a cor de fundo */
+
+    overflow: hidden; /* Impede a rolagem da página */
+}
+
+.pagina { /* Área principal da página */
+    width: 100%; /* Ocupa toda a largura */
+    height: 100vh; /* Ocupa toda a altura da tela */
+
+    display: flex; /* Ativa o Flexbox */
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center; /* Centraliza verticalmente */
+
+    padding: 15px 20px; /* Cria espaço interno */
+
+    background-image: url("/fundo"); /* Coloca a imagem de fundo */
+    background-repeat: no-repeat; /* Não repete a imagem */
+    background-position: center; /* Centraliza a imagem */
+    background-size: 100% 100%; /* Faz a imagem ocupar toda a área */
+}
+
+.card { /* Caixa principal do formulário */
+    width: 390px; /* Define a largura do card */
+    height: 560px; /* Define a altura do card */
+
+    background: var(--branco); /* Deixa o card branco */
+
+    border-radius: 12px; /* Arredonda os cantos */
+
+    padding: 30px 22px 15px; /* Cria espaço interno */
+
+    position: relative; /* Permite posicionar elementos dentro dele */
+    z-index: 2; /* Coloca o card acima de outros elementos */
+
+    box-shadow: 0 2px 15px rgba(15, 47, 115, 0.06); /* Cria uma sombra leve */
+}
+
+.logo-area { /* Área onde fica a logo */
+    width: 100%; /* Ocupa toda a largura */
+
+    display: flex; /* Ativa o Flexbox */
+    justify-content: center; /* Centraliza a logo horizontalmente */
+    align-items: center; /* Centraliza verticalmente */
+
+    margin-top: -15px; /* Aproxima a logo do topo */
+    margin-bottom: 10px; /* Cria espaço abaixo da logo */
+}
+
+.logo { /* Configura a imagem da logo */
+    width: 185px; /* Define a largura da logo */
+    height: auto; /* Mantém a proporção da imagem */
+
+    display: block; /* Faz a imagem se comportar como bloco */
+
+    object-fit: contain; /* Mantém a imagem inteira sem cortar */
+}
+
+.cabecalho { /* Área do título e subtítulo */
+    width: 100%; /* Ocupa toda a largura */
+
+    margin-bottom: 18px; /* Cria espaço abaixo do cabeçalho */
+}
+
+.cabecalho h1 { /* Configura o título principal */
+    font-size: 24px; /* Tamanho do título */
+    font-weight: 700; /* Deixa o título em negrito */
+
+    line-height: 1.2; /* Define a altura das linhas */
+
+    color: var(--azul-escuro); /* Define a cor do título */
+
+    margin-bottom: 5px; /* Espaço abaixo do título */
+}
+
+.cabecalho p { /* Configura o texto abaixo do título */
+    font-size: 12px; /* Tamanho do texto */
+    font-weight: 600; /* Deixa o texto um pouco mais forte */
+
+    line-height: 1.4; /* Define o espaço entre linhas */
+
+    color: var(--cinza-texto); /* Define a cor do texto */
+}
+
+.mensagens { /* Caixa das mensagens de erro ou aviso */
+    width: 100%; /* Ocupa toda a largura */
+    padding: 9px 12px; /* Espaço interno da mensagem */
+    margin-bottom: 12px; /* Espaço abaixo da mensagem */
+    background: var(--vermelho-claro); /* Fundo vermelho claro */
+    border: 1px solid #F4C8CA; /* Cria uma borda vermelha clara */
+    border-radius: 9px; /* Arredonda os cantos */
+    text-align: center; /* Centraliza o texto */
+}
+
+.mensagens p { /* Configura o texto da mensagem */
+    margin: 0; /* Remove a margem do parágrafo */
+
+    color: var(--vermelho); /* Deixa o texto vermelho */
+
+    font-size: 11px; /* Tamanho do texto */
+    font-weight: 600; /* Deixa o texto mais forte */
+
+    line-height: 1.4; /* Define o espaço entre linhas */
+}
+
+.mensagens.sucesso {
+    background: var(--verde-claro);
+    border-color: ;
+     width: 100%; /* Ocupa toda a largura */
+    padding: 9px 12px; /* Espaço interno da mensagem */
+    margin-bottom: 12px; /* Espaço abaixo da mensagem */
+    border: 1px solid #B5E3C8; /* Cria uma borda vermelha clara */
+    border-radius: 9px; /* Arredonda os cantos */
+    text-align: center; /* Centraliza o texto */
+}
+
+.mensagens.sucesso p {
+    color: #1F8A4C;
+}
+
+.campo { /* Cada campo do formulário */
+    width: 100%; /* Ocupa toda a largura */
+
+    margin-bottom: 15px; /* Espaço entre os campos */
+}
+
+.campo label { /* Texto que identifica o campo */
+    display: block; /* Faz o label ocupar uma linha */
+
+    font-size: 12px; /* Tamanho do texto */
+    font-weight: 600; /* Deixa o texto mais forte */
+
+    color: var(--azul-escuro); /* Cor do texto */
+
+    margin-left: 5px; /* Afasta um pouco da esquerda */
+    margin-bottom: 5px; /* Espaço entre o label e o input */
+}
+
+.campo input { /* Campo onde o usuário digita */
+    width: 100%; /* Ocupa toda a largura */
+    height: 42px; /* Define a altura */
+
+    padding: 0 12px; /* Cria espaço dentro do campo */
+
+    border: 1px solid var(--cinza-claro); /* Define a borda */
+    border-radius: 11px; /* Arredonda os cantos */
+
+    outline: none; /* Remove o contorno padrão */
+
+    background: var(--branco); /* Fundo branco */
+
+    color: var(--azul-escuro); /* Cor do texto digitado */
+
+    font-size: 12px; /* Tamanho do texto */
+    font-family: Arial, Helvetica, sans-serif; /* Define a fonte */
+}
+
+.campo input::placeholder { /* Configura o texto de exemplo do input */
+    color: var(--cinza-texto); /* Define a cor do placeholder */
+    opacity: 1; /* Mantém a opacidade normal */
+}
+
+.campo input:focus { /* Configuração quando o usuário clica no input */
+    border-color: var(--azul); /* Muda a borda para azul */
+}
+
+button { /* Configura o botão */
+    width: 100%; /* Ocupa toda a largura */
+    height: 43px; /* Define a altura */
+
+    margin-top: 10px; /* Espaço acima do botão */
+    margin-bottom: 10px; /* Espaço abaixo do botão */
+
+    border: 1px solid var(--azul); /* Cria uma borda azul */
+    border-radius: 11px; /* Arredonda os cantos */
+
+    background: var(--azul); /* Deixa o botão azul */
+
+    color: var(--branco); /* Deixa o texto branco */
+
+    font-size: 14px; /* Tamanho do texto */
+    font-weight: 600; /* Deixa o texto mais forte */
+
+    font-family: Arial, Helvetica, sans-serif; /* Define a fonte */
+
+    cursor: pointer; /* Mostra a mãozinha ao passar o mouse */
+
+    transition: 0.2s; /* Faz a mudança de estilo ser suave */
+}
+
+button:hover { /* Configuração quando passa o mouse no botão */
+    background: #155BDA; /* Muda o azul do botão */
+    color: var(--branco); /* Mantém o texto branco */
+}
+
+button:active { /* Configuração quando o botão é pressionado */
+    transform: scale(0.99); /* Diminui levemente o botão */
+}
+
+.links { /* Área dos links */
+    width: 100%; /* Ocupa toda a largura */
+
+    text-align: center; /* Centraliza os elementos */
+}
+
+.links p { /* Texto dentro da área de links */
+    margin-top: 5px; /* Espaço acima */
+    margin-bottom: 8px; /* Espaço abaixo */
+
+    font-size: 12px; /* Tamanho do texto */
+    font-weight: 600; /* Deixa o texto mais forte */
+
+    line-height: 1.4; /* Define o espaço entre linhas */
+
+    color: var(--azul-escuro); /* Define a cor do texto */
+}
+
+.botao-criar { /* Botão de criar conta */
+    width: 100%; /* Ocupa toda a largura */
+    height: 43px; /* Define a altura */
+
+    display: flex; /* Ativa o Flexbox */
+    align-items: center; /* Centraliza verticalmente */
+    justify-content: center; /* Centraliza horizontalmente */
+
+    border: 1px solid var(--azul); /* Cria uma borda azul */
+    border-radius: 11px; /* Arredonda os cantos */
+
+    background: var(--azul-claro); /* Fundo azul claro */
+
+    color: var(--azul); /* Cor do texto */
+
+    font-size: 13px; /* Tamanho do texto */
+    font-weight: 600; /* Deixa o texto mais forte */
+
+    font-family: Arial, Helvetica, sans-serif; /* Define a fonte */
+
+    text-decoration: none; /* Remove o sublinhado */
+
+    cursor: pointer; /* Mostra a mãozinha */
+
+    transition: 0.2s; /* Deixa a mudança suave */
+}
+
+.botao-criar:hover { /* Quando passa o mouse no botão criar conta */
+    background: #C2D9FF; /* Deixa o fundo um pouco mais escuro */
+
+    color: var(--azul); /* Mantém o texto azul */
+}
+
+.botao-criar:active { /* Quando o botão é pressionado */
+    transform: scale(0.99); /* Diminui levemente o botão */
+}
+
+.voltar { /* Link de voltar */
+    display: block; /* Faz o link ocupar uma linha */
+
+    width: 100%; /* Ocupa toda a largura */
+
+    margin-top: 15px; /* Espaço acima */
+    margin-bottom: 5px; /* Espaço abaixo */
+
+    text-align: center; /* Centraliza o texto */
+
+    font-size: 12px; /* Tamanho do texto */
+    font-weight: 600; /* Deixa o texto mais forte */
+
+    color: var(--azul); /* Cor azul */
+
+    text-decoration: none; /* Remove o sublinhado */
+}
+
+.voltar:hover { /* Quando passa o mouse no link voltar */
+    text-decoration: underline; /* Adiciona sublinhado */
+}
+
+@media (max-width: 600px) { /* Aplica essas regras em telas de até 600px */
+
+    html,
+    body {
+        overflow: auto; /* Permite rolagem em telas pequenas */
+    }
+
+    .pagina {
+        min-height: 100vh; /* Garante pelo menos a altura da tela */
+        height: auto; /* Permite que a altura aumente conforme o conteúdo */
+
+        padding: 15px 10px; /* Diminui o espaço nas laterais */
+
+        background-position: center; /* Centraliza o fundo */
+        background-size: cover; /* Faz o fundo cobrir a tela */
+    }
+
+    .card {
+        width: 100%; /* Usa toda a largura disponível */
+        max-width: 350px; /* Limita a largura máxima */
+
+        height: auto; /* A altura se adapta ao conteúdo */
+        min-height: 475px; /* Define uma altura mínima */
+
+        padding: 22px 20px 15px; /* Ajusta o espaço interno */
+    }
+
+    .logo {
+        width: 180px; /* Diminui um pouco a logo */
+    }
+
+    .mensagens {
+        padding: 8px 10px; /* Diminui o espaço interno da mensagem */
+    }
+
+    .mensagens p {
+        font-size: 10px; /* Diminui o tamanho da mensagem */
+    }
+
+    .botao-criar {
+        height: 42px; /* Diminui a altura do botão */
+        font-size: 12px; /* Diminui o texto */
+    }
+
+    .voltar {
+        margin-top: 7px; /* Diminui o espaço acima */
+        font-size: 9px; /* Diminui o tamanho do texto */
+    }
+}

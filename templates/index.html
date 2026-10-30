@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CredMais | Gestão de crédito para pequenos negócios</title>
+    <link rel="icon" type="image/png" href="../static/uploads/LogoSoloCrediMais.png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+        <header class="topo" id="topo">
+
+            <nav>
+                <span class="marcador"></span>
+                <a href="#inicio" class="ativo" data-texto="Início"> Início </a>
+                <a href="#sobre" data-texto="Sobre"> Sobre </a>
+                <a href="#beneficios" data-texto="Benefícios"> Benefícios</a>
+                <a href="#como-funciona" data-texto="Como Funciona"> Como Funciona</a>
+                <a href="#contato" data-texto="Contato">Contato </a>
+            </nav>
+
+        </header>
+        <main>
+            <!-- banner -->
+            <section class="banner" id="inicio" data-secao="inicio" style="background-image: url('{{ url_for('static', filename='uploads/Wallpaper.png') }}')">
+                <div class="banner-texto">
+                    <img class="logo" src="{{ url_for('static', filename='uploads/logo.png') }}" alt="CredMais - Gestão de crédito para pequenos negócios">
+
+                    <h1> Crédito que <span>impulsiona</span> o seu negócio </h1>
+
+                    <p>O CredMais é uma plataforma de gestão de crédito para pequenos
+                        negócios, desenvolvida para facilitar simulações, analisar riscos
+                        e organizar empréstimos de forma simples e segura. </p>
+
+                    <div class="botoes">
+
+                        <a href="{{ url_for('cadastro') }}" class="btn btn-principal"> Criar conta</a>
+                        <a href="{{ url_for('login') }}" class="btn btn-secundario"> Entrar </a>
+                    </div>
+                </div>
+                <img class="banner-imagem" src="{{ url_for('static', filename='uploads/banner-frontpage.png') }}"  alt="Notebook com painel de gráficos e escudo de segurança">
+            </section>
+            <!-- objetivo -->
+            <section class="secao objetivo" id="sobre" data-secao="sobre">
+                <div>
+                    <h2>Nosso objetivo </h2>
+                    <p>
+                        Oferecer uma plataforma simples e segura para ajudar pequenos
+                        negócios a simular empréstimos, analisar o impacto das parcelas
+                        na renda e organizar melhor suas finanças. Com o CredMais, o
+                        empreendedor consegue acompanhar receitas, despesas, empréstimos
+                        e riscos de forma mais clara, facilitando decisões financeiras
+                        mais conscientes e reduzindo as chances de comprometer
+                        excessivamente o caixa do negócio.
+                    </p>
+                </div>
+                <img src="{{ url_for('static', filename='uploads/ilustracao-frontpage.png') }}" alt="Painel financeiro com gráficos">
+            </section>
+            <!-- beneficios -->
+            <section class="secao" id="beneficios" data-secao="beneficios" >
+
+                <h2>Benefícios</h2>
+                <div class="grid-beneficios">
+                    <article class="card">
+                        <img src="{{ url_for('static', filename='uploads/icone-calc-frontpage.png') }}" alt="">
+
+                        <div>
+
+                            <h3>Simulação de créditos</h3>
+                            <p>Simule diferentes cenários e encontre a melhor opção para o seu momento</p>
+
+                        </div>
+
+                    </article>
+
+                    <article class="card">
+                        <img src="{{ url_for('static', filename='uploads/icone-grafico-frontpage.png') }}"  alt="">
+
+                        <div>
+                            <h3>Análise de riscos</h3>
+                            <p>Avalie o seu perfil e entenda as melhores oportunidades de forma segura. </p>
+                        </div>
+
+                    </article>
+                    <article class="card">
+                        <img src="{{ url_for('static', filename='uploads/icone-carteira-frontpage.png') }}" alt="" >
+
+                        <div>
+                            <h3>Controle financeiro</h3>
+                            <p> Organize suas receitas, despesas e empréstimosem um só lugar.</p>
+                        </div>
+
+                    </article>
+                    <article class="card">
+                        <img src="{{ url_for('static', filename='uploads/icone-documento-frontpage.png') }}"alt="">
+
+                        <div>
+                            <h3> Histórico organizado </h3>
+                            <p> Acompanhe todo o seu histórico de simulações e contratos. </p>
+                        </div>
+
+                    </article>
+                    <article class="card">
+                        <img src="{{ url_for('static', filename='uploads/icone-escudo-frontpage.png') }}"alt="">
+
+                        <div>
+                            <h3>Mais segurança</h3>
+                            <p>Seus dados protegidos com as melhores práticas de segurança.</p>
+                        </div>
+
+                    </article>
+                    <article class="card">
+                        <img src="{{ url_for('static', filename='uploads/icone-lampada-frontpage.png') }}"alt="">
+
+                        <div>
+                            <h3> Decisões mais inteligentes</h3>
+                            <p>Tenha insights e informações para planejar o crescimento do seu negócio.</p>
+                        </div>
+
+                    </article>
+                </div>
+            </section>
+            <!-- pq escolher -->
+            <section class="secao"  id="por-que-escolher" data-secao="beneficios">
+                <span class="sobretitulo"> Por que escolher </span>
+                <h2> Por que escolher a CredMais?</h2>
+                <p class="subtitulo"> Mais do que crédito, um parceiro para o crescimento do seu negócio.</p>
+                <div class="grid-motivos">
+                    <div class="motivo">
+
+                        <img src="{{ url_for('static', filename='uploads/icone-raio.png') }}" alt="">
+                        <div>
+                            <h3> Praticidade </h3>
+                            <p>Tudo online, de forma simples e intuitiva.</p>
+                        </div>
+
+                    </div>
+                    <div class="motivo" id="relogio">
+                        <img src="{{ url_for('static', filename='uploads/icone-relogio.png') }}" alt="">
+                        <div>
+                            <h3> Agilidade</h3>
+                            <p>Simulações e análises em poucos minutos.</p>
+                        </div>
+                    </div>
+                    <div class="motivo">
+                        <img src="{{ url_for('static', filename='uploads/icone-alvo.png') }}" alt="" >
+
+                        <div>
+                            <h3> Organização </h3>
+                            <p> Suas finanças em um só lugar. </p>
+                        </div>
+                    </div>
+                    <div class="motivo">
+                        <img src="{{ url_for('static', filename='uploads/icone-grafico.png') }}" alt="">
+                        <div>
+                            <h3>Visão clara</h3>
+                            <p>Informações que ajudam a planejar o futuro.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- =========================
+                 COMO FUNCIONA
+            ========================== -->
+            <section class="secao" id="como-funciona" data-secao="como-funciona">
+                <span class="sobretitulo">Passo a Passo</span>
+                <h2>Como Funciona</h2>
+                <p class="subtitulo">Em poucos passos, você já pode simular, analisar e gerenciar o crédito do seu negócio.</p>
+                <div class="passos">
+                    <article class="passo" id="usuario">
+                        <div>
+                            <h3>Crie sua conta</h3>
+                            <p>Faça sua conta de forma rápida e gratuita.</p>
+                        </div>
+                        <img src="{{ url_for('static', filename='uploads/vetor-usuario.png') }}" alt="">
+                    </article>
+                    <img class="seta" src="{{ url_for('static', filename='uploads/seta.png') }}" alt="">
+                    <article class="passo">
+                        <div>
+                            <h3>Preencha seu perfil Financeiro</h3>
+                            <p>Informe alguns dados do seu negócio.</p>
+                        </div>
+                        <img src="{{ url_for('static', filename='uploads/vetor-documento.png') }}" alt="">
+                    </article>
+                    <img class="seta" src="{{ url_for('static', filename='uploads/seta.png') }}" alt="">
+                    <article class="passo">
+                        <div>
+                            <h3>Faça a Simulação</h3>
+                            <p>Veja as melhores condições de crédito para o seu perfil</p>
+                        </div>
+                        <img src="{{ url_for('static', filename='uploads/vetor-calc.png') }}" alt="">
+                    </article>
+                    <img class="seta" src="{{ url_for('static', filename='uploads/seta.png') }}" alt="">
+                    <article class="passo">
+                        <div>
+                            <h3>Acompanhe seus Empréstimos</h3>
+                            <p>Gerencie seus contratos e acompanhe seu progresso</p>
+                        </div>
+                        <img src="{{ url_for('static', filename='uploads/vetor-grafico.png') }}" alt="">
+                    </article>
+                </div>
+            </section>
+        </main>
+        <!-- =========================
+             RODAPÉ
+        ========================== -->
+        <footer class="rodape" id="contato" data-secao="contato">
+            <div class="rodape-conteudo">
+                <div class="rodape-marca">
+                    <img class="logo-rodape" src="{{ url_for('static', filename='uploads/logo.png') }}" alt="CredMais">
+                    <p>Crédito acessível, gestão inteligente e mais oportunidades para o crescimento</p>
+                    <div class="redes">
+                        <a href="#">
+                            <img src="{{ url_for('static', filename='uploads/Instagram.png') }}" alt="Instagram">
+                        </a>
+                        <a href="#">
+                            <img src="{{ url_for('static', filename='uploads/Facebook.png') }}" alt="Facebook">
+                        </a>
+                        <a href="#">
+                            <img src="{{ url_for('static', filename='uploads/Twitter.png') }}" alt="X">
+                        </a>
+                    </div>
+                </div>
+                <div class="rodape-contato">
+                    <h4>Entre em contato</h4>
+                    <p>
+                        <img src="{{ url_for('static', filename='uploads/icone-email.png') }}" alt="">
+                        <a href="mailto:credmais@gmail.com">credmais@gmail.com</a>
+                    </p>
+                    <p> © 2026 CredMais. Todos os direitos reservados. </p>
+                </div>
+            </div>
+        </footer>
+        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

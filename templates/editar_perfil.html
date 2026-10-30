@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil Financeiro | CredMais</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/perfil.css') }}">
+    <script src="{{ url_for('static', filename='js/perfil.js') }}" defer></script>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='uploads/LogoSoloCrediMais.png') }}">
+</head>
+<body>
+    <header>
+        <img class="logo" src="{{ url_for('logo_dashboard') }}" alt="Logo CredMais">
+        <nav>
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('perfil') }}" >Perfil</a>
+            <a href="{{ url_for('simulacao') }}">Simulação</a>
+            <a href="{{ url_for('historico_emprestimos') }}">Empréstimos</a>
+            <a href="{{ url_for('movimentacoes') }}">Movimentações</a>
+        </nav>
+    </header>
+
+    <main class="pagina">
+        <section class="titulo-pagina">
+            <img class="banner-imagem" src="{{ url_for('static', filename='uploads/icone-grafico.png') }}" alt="Ícone do perfil">
+            <div>
+                <h1>Perfil Financeiro</h1>
+                <p>Visualize e atualize suas informações pessoais.</p>
+            </div>
+        </section>
+
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% if mensagens %}
+                <div class="mensagens" aria-live="polite">
+                    {% for categoria, mensagem in mensagens %}
+                        <p class="mensagem {{ categoria }}">{{ mensagem }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="cartoes">
+            <section class="cartao cartao-visual">
+                <h2>Meu perfil</h2>
+
+                <div class="foto-perfil">
+                    <label for="foto" class="editar-foto">
+
+                        <img id="imagem-perfil" src="{% if foto_perfil %}{{ url_for('static', filename='uploads/' + foto_perfil) }}{% endif %}" alt="" {% if not foto_perfil %}hidden{% endif %}>
+
+                        <span id="texto-sem-foto" {% if foto_perfil %}hidden{% endif %}>
+                            Adicionar foto
+                        </span>
+                    </label>
+
+                    <label for="foto" class="texto-editar-foto">
+                        Editar foto
+                    </label>
+                </div>
+
+                <h3 id="visual-nome">{{ nome }}</h3>
+                <p class="descricao-perfil">Usuário CredMais</p>
+
+                <div class="dados-perfil">
+                    <div class="dado">
+                        <span>Nome completo</span>
+                        <p id="visual-nome-detalhe">{{ nome }}</p>
+                    </div>
+                    <div class="dado">
+                        <span>E-mail</span>
+                        <p id="visual-email">{{ email }}</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="cartao cartao-edicao">
+                <h2>Editar informações</h2>
+                <p class="texto-apoio">Mantenha seus dados atualizados.</p>
+
+                <form id="form-editar-perfil" method="POST" action="{{ url_for('perfil') }}" enctype="multipart/form-data">
+                    <input
+                        type="file"
+                        id="foto"
+                        name="foto"
+                        accept=".jpg,.jpeg,.png,.webp"
+                        hidden
+                        onchange="mostrarFoto(this)"
+                    >
+
+                    <div class="campo">
+                        <label for="nome">Nome</label>
+                        <input type="text" id="nome" name="nome" maxlength="100" value="{{ nome }}" required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" name="email" maxlength="100" value="{{ email }}" required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="senha_atual">Senha atual</label>
+                        <input type="password" id="senha_atual" name="senha_atual" >
+                    </div>
+
+                    <div class="campo">
+                        <label for="nova_senha">Nova senha</label>
+                        <input type="password" id="nova_senha" name="nova_senha">
+                        <small class="ajuda">Deixe em branco se não quiser alterar a senha.</small>
+                    </div>
+
+                    <p id="mensagem-js" class="mensagem-js" role="alert"></p>
+                    <button type="submit" class="botao">Salvar alterações</button>
+                </form>
+            </section>
+        </div>
+    </main>
+</body>
+</html>

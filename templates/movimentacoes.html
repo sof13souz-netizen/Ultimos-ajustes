@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movimentações | CredMais</title>
+    <link rel="icon" type="image/png" href="../static/uploads/LogoSoloCrediMais.png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_movimentacoes.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+</head>
+<body>
+    {% set pagina_ativa = 'movimentacoes' %}
+<header class="cabecalho-padrao">
+    <a href="{{ url_for('dashboard') }}" class="cabecalho-logo">
+        <img src="{{ url_for('static', filename='uploads/LogoSoloCrediMais.png') }}" alt="Logo CredMais" class="cabecalho-simbolo">
+        <span class="cabecalho-texto">
+            <span class="cabecalho-nome"><span class="nome-azul">Cred</span><span class="nome-verde">Mais</span></span>
+            <span class="cabecalho-slogan">Gestão de crédito para<br>pequenos negócios</span>
+        </span>
+    </a>
+    <nav class="cabecalho-menu">
+        <a href="{{ url_for('dashboard') }}" class="{% if pagina_ativa == 'dashboard' %}ativo{% endif %}">Dashboard</a>
+        <a href="{{ url_for('perfil') }}" class="{% if pagina_ativa == 'perfil' %}ativo{% endif %}">Perfil</a>
+        {% if eh_admin %}
+        <a href="{{ url_for('listar_taxas') }}" class="{% if pagina_ativa == 'taxas' %}ativo{% endif %}">Taxas</a>
+        {% endif %}
+        <a href="{{ url_for('simulacao') }}" class="{% if pagina_ativa == 'simulacao' %}ativo{% endif %}">Simulação</a>
+        <a href="{{ url_for('historico_emprestimos') }}" class="{% if pagina_ativa == 'emprestimos' %}ativo{% endif %}">Empréstimos</a>
+        <a href="{{ url_for('movimentacoes') }}" class="{% if pagina_ativa == 'movimentacoes' %}ativo{% endif %}">Movimentações</a>
+    </nav>
+</header>
+<main class="conteudo">
+
+    <h1 class="titulo-mobile">Movimentações</h1>
+
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+    {% for categoria_msg, mensagem in mensagens %}
+    <div class="mensagem {{ categoria_msg }}">{{ mensagem }}</div>
+    {% endfor %}
+    {% endwith %}
+    <section class="saldo">
+        <div class="saldo-esquerda">
+            <div class="icone icone-azul">
+                <img src="{{ url_for('static', filename='uploads/icone-rotacao-monetaria.png') }}" alt="">
+            </div>
+            <h2>Saldo Atual</h2>
+        </div>
+        <strong class="valor-saldo">
+            R$ {{ saldo_texto }}
+        </strong>
+    </section>
+    <section class="resumos">
+        <article class="cartao-resumo">
+            <div class="icone icone-verde">
+                <img
+                        src="{{ url_for('static', filename='uploads/icone-receita-positiva.png') }}"
+                        alt=""
+                >
+            </div>
+            <h2>Receitas</h2>
+            <div class="resumo-valor">
+                <strong>
+                    + R$ {{ receitas_texto }} </strong>
+
+                <small>Nos últimos 30 dias</small>
+            </div>
+        </article>
+        <article class="cartao-resumo">
+            <div class="icone icone-vermelho">
+                <img
+                        src="{{ url_for('static', filename='uploads/icone-despesas.png') }}"
+                        alt="">
+            </div>
+            <h2>Despesas</h2>
+            <div class="resumo-valor">
+                <strong>
+                    - R$ {{ despesas_texto }} </strong>
+                <small>Nos últimos 30 dias</small>
+            </div>
+        </article>
+    </section>
+    <section class="acoes">
+        <a
+                href="{{ url_for('nova_movimentacao') }}"
+                class="botao botao-adicionar"
+                aria-label="Adicionar Movimentação"
+        >
+            <span class="icone-botao">+</span>
+            <span class="texto-botao">Adicionar Movimentação</span>
+        </a>
+
+        <!-- seleção de período: cada link recarrega a página com ?periodo=... -->
+        <div class="seletor-periodo">
+            <a href="{{ url_for('movimentacoes', periodo='ultimos') }}"
+               class="{% if periodo == 'ultimos' %}selecionado{% endif %}">Últimos 3 Meses</a>
+            <a href="{{ url_for('movimentacoes', periodo='proximos') }}"
+               class="{% if periodo == 'proximos' %}selecionado{% endif %}">Próximos 3 Meses</a>
+            <a href="{{ url_for('movimentacoes', periodo='todos') }}"
+               class="{% if periodo == 'todos' %}selecionado{% endif %}">Todo o Tempo</a>
+        </div>
+
+        <a
+                href="{{ url_for('relatorio', periodo=periodo) }}"
+                class="botao botao-pdf"
+                aria-label="Baixar como PDF"
+        >
+            <img
+                    src="{{ url_for('static', filename='uploads/icone-download.png') }}"
+                    alt=""
+                    class="icone-download"
+            >
+            <span class="texto-botao">Baixar como PDF</span>
+        </a>
+    </section>
+    <section class="tabela-container">
+        <table>
+            <thead>
+            <tr>
+                <th>Data</th>
+                <th class="descricao">Descrição</th>
+                <th>Classificação</th>
+                <th>Categoria</th>
+                <th>Valor</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in dados %}
+            <tr class="linha-clicavel"
+                onclick="window.location='{{ url_for('visualizar_movimentacao', id_mov=item.id) }}'">
+                <td data-label="Data">{{ item.data }}</td>
+                <td class="descricao">
+                    <a href="{{ url_for('visualizar_movimentacao', id_mov=item.id) }}">{{ item.descricao }}</a>
+                </td>
+                <td data-label="Classificação">{{ item.classificacao }}</td>
+                <td class="categoria">{{ item.categoria }}</td>
+
+                <td class="valor {{ item.classe }}">
+                    {{ item.sinal }}
+                    R$ {{ item.valor_texto }}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">Nenhuma movimentação neste período.</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>

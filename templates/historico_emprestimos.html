@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title> Detalhes do Empréstimo - CredMais</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/historico_emprestimos.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+        <link rel="icon" type="image/png" href="../static/uploads/LogoSoloCrediMais.png">
+    </head>
+    <body>
+
+    {% set pagina_ativa = 'emprestimos' %}
+<header class="cabecalho-padrao">
+    <a href="{{ url_for('dashboard') }}" class="cabecalho-logo">
+        <img src="{{ url_for('static', filename='uploads/LogoSoloCrediMais.png') }}" alt="Logo CredMais" class="cabecalho-simbolo">
+        <span class="cabecalho-texto">
+            <span class="cabecalho-nome"><span class="nome-azul">Cred</span><span class="nome-verde">Mais</span></span>
+            <span class="cabecalho-slogan">Gestão de crédito para<br>pequenos negócios</span>
+        </span>
+    </a>
+    <nav class="cabecalho-menu">
+        <a href="{{ url_for('dashboard') }}" class="{% if pagina_ativa == 'dashboard' %}ativo{% endif %}">Dashboard</a>
+        <a href="{{ url_for('perfil') }}" class="{% if pagina_ativa == 'perfil' %}ativo{% endif %}">Perfil</a>
+        {% if eh_admin %}
+        <a href="{{ url_for('listar_taxas') }}" class="{% if pagina_ativa == 'taxas' %}ativo{% endif %}">Taxas</a>
+        {% endif %}
+        <a href="{{ url_for('simulacao') }}" class="{% if pagina_ativa == 'simulacao' %}ativo{% endif %}">Simulação</a>
+        <a href="{{ url_for('historico_emprestimos') }}" class="{% if pagina_ativa == 'emprestimos' %}ativo{% endif %}">Empréstimos</a>
+        <a href="{{ url_for('movimentacoes') }}" class="{% if pagina_ativa == 'movimentacoes' %}ativo{% endif %}">Movimentações</a>
+    </nav>
+</header>
+        <main class="pagina">
+
+            <section>
+                 <div class="titulo">
+                    <h1>Histórico de Empréstimos</h1>
+                </div>
+
+                <div>
+                    <a href="{{ url_for('simulacao') }}" class="botao_simular_emprestimo">Simular novo empréstimo</a>
+                </div>
+
+            <section class="tabela-container">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Tipo</th>
+                        <th>Valor</th>
+                        <th>Parcelas</th>
+                        <th>Risco</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in dados %}
+                    <tr class="linha-clicavel"
+                        onclick="window.location='{{ url_for('visualizar_movimentacao', id_mov=item.id) }}'">
+                        <td data-label="Data">{{ item.data }}</td>
+                        <td class="descricao">
+                            <a href="{{ url_for('visualizar_movimentacao', id_mov=item.id) }}">{{ item.descricao }}</a>
+                        </td>
+                        <td data-label="Classificação">{{ item.classificacao }}</td>
+                        <td class="categoria">{{ item.categoria }}</td>
+
+                        <td class="valor {{ item.classe }}">
+                            {{ item.sinal }}
+                            R$ {{ item.valor_texto }}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5">Nenhuma empréstimo até o momento.</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+
+            <div class="botoes-inferiores">
+                <a href="SUA_ROTA_DE_PDF" class="baixar_pdf">Baixar como PDF</a>
+                <a href="{{ url_for('dashboard') }}" class="voltar">Voltar</a>
+            </div>
+            </section>
+        </main>
+    </body>
+</html>

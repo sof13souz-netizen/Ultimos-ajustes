@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <!-- Configurações da página -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Título da página -->
+    <title>Administrar - Taxas</title>
+    <link rel="icon" type="image/png" href="../static/uploads/LogoSoloCrediMais.png">
+    <!-- Ligação com o arquivo CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/taxas_administrar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+
+    <!-- Estilos da janela de confirmação -->
+    <style>
+        /* Fundo escuro atrás da janela */
+        .fundo-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.15);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        /* Janela de confirmação */
+        .modal {
+            width: 100%;
+            max-width: 455px;
+            background-color: #FFFFFF;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.18);
+        }
+
+        /* Círculo do ícone de lixeira */
+        .icone-modal {
+            width: 100px;
+            height: 100px;
+            margin: -10px auto 28px;
+            border: 1px solid #1A67F5;
+            border-radius: 50%;
+            background-color: #D1E3FF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 48px;
+        }
+
+        /* Título da janela */
+        .modal h2 {
+            color: #000000;
+            font-size: 23px;
+            margin-bottom: 20px;
+        }
+
+        /* Informações da taxa selecionada */
+        .informacao-taxa {
+            color: #7186AA;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        /* Área dos botões da janela */
+        .botoes-modal {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Botões da janela */
+        .botao-confirmar,
+        .botao-cancelar {
+            width: 143px;
+            padding: 9px;
+            border-radius: 9px;
+            font-size: 17px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        /* Botão de confirmar a exclusão */
+        .botao-confirmar {
+            background-color: #1A67F5;
+            color: #FFFFFF;
+            border: 1px solid #1A67F5;
+        }
+
+        /* Botão de cancelar */
+        .botao-cancelar {
+            background-color: #FFFFFF;
+            color: #1A67F5;
+            border: 1px solid #1A67F5;
+        }
+
+        /* Mensagem para leitores de tela */
+        .mensagem-vazia {
+            display: none;
+            background-color: #FFFFFF;
+            padding: 25px;
+            text-align: center;
+            color: #7186AA;
+        }
+
+        /* Ajustes da janela em telas pequenas */
+        @media (max-width: 500px) {
+            .modal {
+                padding: 25px 15px;
+            }
+
+            .modal h2 {
+                font-size: 20px;
+            }
+
+            .botao-confirmar,
+            .botao-cancelar {
+                width: 125px;
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Cabeçalho da página -->
+    {% set pagina_ativa = 'taxas' %}
+<header class="cabecalho-padrao">
+    <a href="{{ url_for('dashboard') }}" class="cabecalho-logo">
+        <img src="{{ url_for('static', filename='uploads/LogoSoloCrediMais.png') }}" alt="Logo CredMais" class="cabecalho-simbolo">
+        <span class="cabecalho-texto">
+            <span class="cabecalho-nome"><span class="nome-azul">Cred</span><span class="nome-verde">Mais</span></span>
+            <span class="cabecalho-slogan">Gestão de crédito para<br>pequenos negócios</span>
+        </span>
+    </a>
+    <nav class="cabecalho-menu">
+        <a href="{{ url_for('dashboard') }}" class="{% if pagina_ativa == 'dashboard' %}ativo{% endif %}">Dashboard</a>
+        <a href="{{ url_for('perfil') }}" class="{% if pagina_ativa == 'perfil' %}ativo{% endif %}">Perfil</a>
+        {% if eh_admin %}
+        <a href="{{ url_for('listar_taxas') }}" class="{% if pagina_ativa == 'taxas' %}ativo{% endif %}">Taxas</a>
+        {% endif %}
+        <a href="{{ url_for('simulacao') }}" class="{% if pagina_ativa == 'simulacao' %}ativo{% endif %}">Simulação</a>
+        <a href="{{ url_for('historico_emprestimos') }}" class="{% if pagina_ativa == 'emprestimos' %}ativo{% endif %}">Empréstimos</a>
+        <a href="{{ url_for('movimentacoes') }}" class="{% if pagina_ativa == 'movimentacoes' %}ativo{% endif %}">Movimentações</a>
+    </nav>
+</header>
+
+    <!-- Conteúdo principal -->
+    <main>
+
+        <!-- Título e botão de cadastro -->
+        <div class="cabecalho-taxas">
+
+            <div class="titulo-pagina">
+
+                <!-- Ícone da página -->
+                <div class="icone-taxas">
+                    <img
+                        src="{{ url_for('icone_taxas') }}"
+                        alt="Ícone de taxas"
+                    >
+                </div>
+
+                <!-- Nome e descrição -->
+                <div class="texto-titulo">
+                    <h1>Administrar / Taxas</h1>
+                    <p>Administre suas taxas.</p>
+                </div>
+
+            </div>
+
+            <!-- Botão para cadastrar taxa -->
+            <button class="botao-cadastrar" type="button" onclick="window.location.href='{{ url_for('cadastrar_taxa') }}'">
+                + Cadastrar taxa
+            </button>
+
+        </div>
+
+        <!-- Lista de taxas -->
+        <div class="lista-taxas">
+
+            <h2>Lista de Taxas</h2>
+
+            <!-- Cabeçalho da lista -->
+            <div class="linha-titulo">
+                <div>Ano/Exercício</div>
+                <div>Taxa mensal</div>
+                <div>Ações</div>
+            </div>
+
+            <!-- Taxa do ano de 2025 -->
+            <div class="linha-taxa">
+                <div>2025</div>
+                <div>2,00%</div>
+
+                <div class="botoes-acoes">
+                    <button class="botao-editar" type="button" onclick="window.location.href='{{ url_for('editar_taxa') }}'">Editar</button>
+                    <button class="botao-excluir" type="button">Excluir</button>
+                </div>
+            </div>
+
+            <!-- Taxa do ano de 2024 -->
+            <div class="linha-taxa">
+                <div>2024</div>
+                <div>2,50%</div>
+
+                <div class="botoes-acoes">
+                    <button class="botao-editar" type="button" onclick="window.location.href='{{ url_for('editar_taxa') }}'">Editar</button>
+                    <button class="botao-excluir" type="button">Excluir</button>
+                </div>
+            </div>
+
+            <!-- Taxa do ano de 2023 -->
+            <div class="linha-taxa">
+                <div>2023</div>
+                <div>3,00%</div>
+
+                <div class="botoes-acoes">
+                    <button class="botao-editar" type="button" onclick="window.location.href='{{ url_for('editar_taxa') }}'">Editar</button>
+                    <button class="botao-excluir" type="button">Excluir</button>
+                </div>
+            </div>
+
+            <!-- Mensagem exibida quando não houver taxas -->
+            <div class="mensagem-vazia">
+                Não há taxas cadastradas.
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Janela de confirmação de exclusão -->
+    <div class="fundo-modal" id="fundo-modal">
+
+        <div
+            class="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo-modal"
+        >
+
+            <!-- Ícone de lixeira -->
+            <div class="icone-modal">
+                <img src="{{ url_for('static', filename='uploads/icone_excluir.png') }}" alt="Ícone de excluir">
+            </div>
+
+            <!-- Pergunta de confirmação -->
+            <h2 id="titulo-modal">Deseja excluir esta taxa?</h2>
+
+            <!-- Dados da taxa selecionada -->
+            <div class="dados-taxa">
+                <p class="informacao-taxa" id="informacao-taxa">
+                    Ano:{{ano_atual}} | Taxa mensal: {{taxa_mensal}}
+                </p>
+
+            </div>
+
+            <!-- Botões da janela -->
+            <div class="botoes-modal">
+
+                <button
+                    class="botao-confirmar"
+                    id="botao-confirmar"
+                    type="button"
+                >
+                    Excluir
+                </button>
+
+                <button
+                    class="botao-cancelar"
+                    id="botao-cancelar"
+                    type="button"
+                >
+                    Cancelar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Código que controla a janela de exclusão -->
+<script>
+
+    // CONST: cria uma variável que não pode receber outra atribuição.
+    // document.querySelector() seleciona um elemento do HTML
+    // usando o ID indicado pelo símbolo #.
+
+    const fundoModal = document.querySelector("#fundo-modal");
+    const informacaoTaxa = document.querySelector("#informacao-taxa");
+    const botaoConfirmar = document.querySelector("#botao-confirmar");
+    const botaoCancelar = document.querySelector("#botao-cancelar");
+    const mensagemVazia = document.querySelector(".mensagem-vazia");
+
+    // LET: cria uma variável que pode receber outro valor.
+    // Inicialmente, nenhuma taxa está selecionada.
+    let taxaSelecionada = null;
+
+    // QUERYSELECTORALL: seleciona todos os botões
+    // que possuem a classe botao-excluir.
+    const botoesExcluir = document.querySelectorAll(".botao-excluir");
+
+    // FOR: repete o código enquanto houver botões na lista.
+    // É utilizado aqui para configurar cada botão de exclusão.
+    for (let i = 0; i < botoesExcluir.length; i++) {
+
+        // Seleciona o botão atual da lista.
+        const botao = botoesExcluir[i];
+
+        // ADDEVENTLISTENER: define uma ação para quando
+        // o usuário clicar no botão.
+        botao.addEventListener("click", function() {
+
+            // PARENTElement: acessa o elemento pai do botão.
+            // O primeiro parentElement é o formulário ou a área
+            // dos botões, dependendo da estrutura do seu HTML.
+            // O segundo acessa o elemento acima dele.
+            taxaSelecionada = botao.parentElement.parentElement;
+
+            // QUERYSELECTOR: procura a primeira div dentro
+            // da linha selecionada.
+            const ano = taxaSelecionada.querySelector("div").textContent;
+
+            // TEXTCONTENT: altera o texto exibido na janela.
+            informacaoTaxa.textContent = "Ano: " + ano;
+
+            // STYLE.DISPLAY: altera a forma de exibição do elemento.
+            // FLEX faz a janela aparecer.
+            fundoModal.style.display = "flex";
+
+        });
+
+    }
+
+    // Quando o usuário clicar em Cancelar...
+    botaoCancelar.addEventListener("click", function() {
+
+        // Esconde a janela de confirmação.
+        fundoModal.style.display = "none";
+
+        // LIMPA a taxa selecionada.
+        taxaSelecionada = null;
+
+    });
+
+    // Quando o usuário clicar em Confirmar...
+    botaoConfirmar.addEventListener("click", function() {
+
+        // IF: verifica se existe uma taxa selecionada.
+        // !== significa "diferente de".
+        // NULL representa a ausência de um valor.
+        if (taxaSelecionada !== null) {
+
+            // REMOVE: retira a linha selecionada da página.
+            taxaSelecionada.remove();
+
+            // Esconde a janela de confirmação.
+            fundoModal.style.display = "none";
+
+            // Procura uma linha de taxa que ainda esteja na página.
+            const taxasRestantes = document.querySelector(".linha-taxa");
+
+            // Se não existir nenhuma linha, mostra a mensagem.
+            if (taxasRestantes === null) {
+
+                mensagemVazia.style.display = "block";
+
+            }
+
+            // Limpa a seleção depois da operação.
+            taxaSelecionada = null;
+
+        }
+
+    });
+
+    // Detecta cliques no fundo da janela.
+    fundoModal.addEventListener("click", function(evento) {
+
+        // EVENTO.TARGET identifica o elemento que recebeu o clique.
+        // Se o clique acontecer no fundo, fecha a janela.
+        if (evento.target === fundoModal) {
+
+            fundoModal.style.display = "none";
+
+            // Limpa a seleção da taxa.
+            taxaSelecionada = null;
+
+        }
+
+    });
+
+</script>
+
+</body>
+</html>
+

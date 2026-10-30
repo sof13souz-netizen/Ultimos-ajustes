@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Emprestimo realizado | CredMais</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/emprestimo_realizado.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+    <link rel="icon" type="image/png" href="../static/uploads/LogoSoloCrediMais.png">
+</head>
+<body>
+
+    {% set pagina_ativa = 'emprestimos' %}
+<header class="cabecalho-padrao">
+    <a href="{{ url_for('dashboard') }}" class="cabecalho-logo">
+        <img src="{{ url_for('static', filename='uploads/LogoSoloCrediMais.png') }}" alt="Logo CredMais" class="cabecalho-simbolo">
+        <span class="cabecalho-texto">
+            <span class="cabecalho-nome"><span class="nome-azul">Cred</span><span class="nome-verde">Mais</span></span>
+            <span class="cabecalho-slogan">Gestão de crédito para<br>pequenos negócios</span>
+        </span>
+    </a>
+    <nav class="cabecalho-menu">
+        <a href="{{ url_for('dashboard') }}" class="{% if pagina_ativa == 'dashboard' %}ativo{% endif %}">Dashboard</a>
+        <a href="{{ url_for('perfil') }}" class="{% if pagina_ativa == 'perfil' %}ativo{% endif %}">Perfil</a>
+        {% if eh_admin %}
+        <a href="{{ url_for('listar_taxas') }}" class="{% if pagina_ativa == 'taxas' %}ativo{% endif %}">Taxas</a>
+        {% endif %}
+        <a href="{{ url_for('simulacao') }}" class="{% if pagina_ativa == 'simulacao' %}ativo{% endif %}">Simulação</a>
+        <a href="{{ url_for('historico_emprestimos') }}" class="{% if pagina_ativa == 'emprestimos' %}ativo{% endif %}">Empréstimos</a>
+        <a href="{{ url_for('movimentacoes') }}" class="{% if pagina_ativa == 'movimentacoes' %}ativo{% endif %}">Movimentações</a>
+    </nav>
+</header>
+
+    <main class="pagina-sucesso">
+        <section class="card-sucesso">
+            <img src="{{ url_for('static', filename='uploads/icone-correto-movimentacao.png') }}" alt="Movimentação registrada" class="icone-sucesso">
+
+            <h1>Empréstimo realizado com sucesso!</h1>
+            <p class="subtitulo-sucesso">
+                A sua solicitação foi registrada e está em precesso de liberação.
+            </p>
+
+            <div class="resumo-sucesso {{ dados.classe }}">
+                <div>
+                    <div class="resumo-rotulo">Valor do empréstimo</div>
+                    <div class="resumo-valor-sucesso">R$ {{ dados.valor_texto }}</div>
+                </div>
+
+                <div class="resumo-info">
+                    <div>Prazo: {{ dados.prazo }}</div>
+                    <div>Parcela: {{ dados.parcela }}</div>
+                </div>
+            </div>
+
+            <hr class="divisor-sucesso">
+
+            <a href="{{ url_for('movimentacoes') }}" class="botao-voltar">Voltar para o Início</a>
+        </section>
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,386 @@
+
+:root {                                     /* Cria variáveis que podem ser reutilizadas no CSS */
+    --azul: #1A67F5;                        /* Define a cor azul principal */
+    --azul-escuro: #111111;                 /* Define a cor azul/escura para textos */
+    --azul-claro: #D1E3FF;                  /* Define um azul mais claro */
+
+    --verde: #40BE76;                       /* Define a cor verde principal */
+    --verde-claro: #DDF5E7;                 /* Define um verde mais claro */
+
+    --vermelho: #F44A4D;                    /* Define a cor vermelha principal */
+    --vermelho-claro: #FDEBEC;              /* Define um vermelho mais claro */
+
+    --fundo: #F5F7FB;                       /* Define a cor de fundo da página */
+    --cinza-claro: #DCE5F1;                 /* Define um cinza claro para bordas */
+    --cinza-texto: #7184B0;                 /* Define a cor dos textos secundários */
+    --branco: #FFFFFF;                      /* Define a cor branca */
+}
+
+* {                                         /* Seleciona todos os elementos da página */
+    margin: 0;                              /* Remove as margens padrão */
+    padding: 0;                             /* Remove os espaçamentos internos padrão */
+    box-sizing: border-box;                 /* Faz o tamanho incluir o padding e a borda */
+}
+
+html {                                      /* Configura o elemento HTML */
+    width: 100%;                            /* Ocupa toda a largura disponível */
+    height: 100%;                           /* Ocupa toda a altura disponível */
+}
+
+body {                                      /* Configura o corpo da página */
+    width: 100%;                            /* Ocupa toda a largura */
+    min-height: 100vh;                      /* Garante no mínimo a altura da tela */
+    font-family: Arial, Helvetica, sans-serif; /* Define a fonte usada na página */
+    background: var(--fundo);               /* Define a cor de fundo */
+}
+
+.pagina {                                   /* Área principal da página */
+    width: 100%;                            /* Ocupa toda a largura */
+    min-height: 100vh;                      /* Ocupa pelo menos toda a altura da tela */
+
+    display: flex;                          /* Ativa o Flexbox */
+    justify-content: center;                /* Centraliza o conteúdo na horizontal */
+    align-items: center;                    /* Centraliza o conteúdo na vertical */
+    padding: 20px;                          /* Cria espaço nas bordas da página */
+    background-image: url("/fundo");        /* Coloca a imagem de fundo */
+    background-repeat: no-repeat;           /* Impede a repetição da imagem */
+    background-position: center;            /* Centraliza a imagem de fundo */
+    background-size: 100% 100%;             /* Faz a imagem ocupar toda a área */
+}
+
+.card {                                     /* Caixa branca onde fica o formulário */
+    width: 390px;                           /* Define a largura do card */
+    background: var(--branco);              /* Define o fundo branco */
+    border-radius: 12px;                    /* Arredonda os cantos do card */
+    padding: 30px 22px 20px;                /* Define o espaço interno do card */
+    position: relative;                     /* Permite posicionar elementos dentro dele */
+    z-index: 2;                             /* Coloca o card acima de outros elementos */
+    box-shadow: 0 2px 15px rgba(15, 47, 115, 0.06); /* Cria uma sombra leve */
+}
+
+.logo-area {                                /* Área onde fica a logo */
+    width: 100%;                            /* Ocupa toda a largura */
+
+    display: flex;                          /* Ativa o Flexbox */
+    justify-content: center;                /* Centraliza a logo horizontalmente */
+    align-items: center;                    /* Centraliza a logo verticalmente */
+
+    margin-top: -15px;                      /* Aproxima a logo do topo */
+    margin-bottom: 15px;                    /* Cria espaço abaixo da logo */
+}
+
+.logo {                                     /* Configura a imagem da logo */
+    width: 205px;                           /* Define a largura da logo */
+    height: auto;                           /* Mantém a proporção da imagem */
+
+    display: block;                         /* Faz a imagem ocupar seu próprio espaço */
+
+    object-fit: contain;                    /* Mantém a imagem inteira sem cortar */
+}
+
+.cabecalho {                                /* Área do título e subtítulo */
+    width: 100%;                            /* Ocupa toda a largura */
+
+    margin-bottom: 15px;                    /* Cria espaço abaixo do cabeçalho */
+}
+
+.cabecalho h1 {                             /* Configura o título principal */
+    font-size: 24px;                        /* Define o tamanho do título */
+    font-weight: 700;                       /* Deixa o título em negrito */
+
+    line-height: 1.2;                       /* Define a altura das linhas */
+
+    color: var(--azul-escuro);              /* Define a cor do título */
+
+    margin-bottom: 4px;                     /* Cria espaço abaixo do título */
+}
+
+.cabecalho p {                              /* Configura o texto abaixo do título */
+    font-size: 12px;                        /* Define o tamanho do texto */
+    font-weight: 600;                       /* Deixa o texto um pouco mais forte */
+
+    line-height: 1.4;                       /* Define o espaço entre as linhas */
+
+    color: var(--cinza-texto);              /* Define a cor do texto */
+}
+
+.campo {                                    /* Área de cada campo do formulário */
+    width: 100%;                             /* Ocupa toda a largura */
+
+    margin-bottom: 12px;                    /* Cria espaço entre os campos */
+}
+
+.campo label {                              /* Configura o nome de cada campo */
+    display: block;                         /* Faz o label ocupar uma linha */
+
+    font-size: 12px;                        /* Define o tamanho do texto */
+    font-weight: 600;                       /* Deixa o texto mais forte */
+
+    color: var(--azul-escuro);              /* Define a cor do texto */
+
+    margin-left: 5px;                       /* Afasta o texto um pouco da esquerda */
+    margin-bottom: 5px;                     /* Cria espaço entre o label e o input */
+}
+
+.campo input {                              /* Configura os campos onde o usuário digita */
+    width: 100%;                            /* Ocupa toda a largura */
+    height: 41px;                           /* Define a altura do campo */
+
+    padding: 0 12px;                        /* Cria espaço interno nas laterais */
+
+    border: 1px solid var(--cinza-claro);   /* Define a borda do campo */
+    border-radius: 11px;                    /* Arredonda os cantos */
+
+    outline: none;                          /* Remove o contorno padrão do navegador */
+
+    background: var(--branco);              /* Define o fundo branco */
+
+    color: var(--azul-escuro);              /* Define a cor do texto digitado */
+
+    font-size: 12px;                        /* Define o tamanho do texto */
+    font-family: Arial, Helvetica, sans-serif; /* Define a fonte */
+}
+
+.campo input::placeholder {                 /* Configura o texto de exemplo do input */
+    color: var(--cinza-texto);              /* Define a cor do placeholder */
+    opacity: 1;                             /* Mantém o texto totalmente visível */
+}
+
+.campo input:focus {                         /* Aplica estilo quando o usuário clica no campo */
+    border-color: var(--azul);               /* Muda a borda para azul */
+}
+
+.mensagens {                                  /* Caixa usada para mostrar mensagens de erro ou aviso */
+    width: 100%;                              /* Ocupa toda a largura */
+
+    padding: 9px 12px;                        /* Cria espaço dentro da caixa */
+
+    margin-bottom: 12px;                      /* Cria espaço abaixo da mensagem */
+
+    background: var(--vermelho-claro);        /* Define o fundo vermelho claro */
+
+    border: 1px solid #F4C8CA;                /* Cria uma borda vermelha clara */
+
+    border-radius: 9px;                       /* Arredonda os cantos */
+
+    text-align: center;                       /* Centraliza o texto */
+}
+
+.mensagens p {                                /* Configura o texto dentro da mensagem */
+    margin: 0; /* Remove a margem do parágrafo */
+
+    color: var(--vermelho); /* Deixa o texto vermelho */
+
+    font-size: 11px; /* Define o tamanho do texto */
+    font-weight: 600; /* Deixa o texto mais forte */
+
+    line-height: 1.4; /* Define o espaço entre as linhas */
+}
+
+.aviso-senha { /* Texto que explica as regras da senha */
+    width: 100%; /* Ocupa toda a largura */
+
+    margin-top: -3px; /* Aproxima o aviso do campo de senha */
+    margin-left: 5px; /* Afasta o aviso um pouco da esquerda */
+    margin-bottom: 12px; /* Cria espaço abaixo do aviso */
+
+    color: var(--cinza-texto); /* Define a cor do texto */
+
+    font-size: 10px; /* Define o tamanho do texto */
+    font-weight: 600; /* Deixa o texto mais forte */
+
+    line-height: 1.4; /* Define o espaço entre as linhas */
+
+    text-align: left; /* Alinha o texto à esquerda */
+}
+
+.botao-cadastro { /* Configura o botão de criar cadastro */
+    width: 100%; /* Ocupa toda a largura */
+    height: 48px; /* Define a altura do botão */
+
+    margin-top: 4px; /* Cria um pequeno espaço acima */
+    margin-bottom: 10px; /* Cria espaço abaixo */
+
+    border: 1px solid var(--azul); /* Cria uma borda azul */
+    border-radius: 11px; /* Arredonda os cantos */
+
+    background: var(--azul-claro); /* Define o fundo azul claro */
+
+    color: var(--azul); /* Define a cor do texto */
+
+    font-size: 14px; /* Define o tamanho do texto */
+    font-weight: 600; /* Deixa o texto mais forte */
+
+    font-family: Arial, Helvetica, sans-serif; /* Define a fonte */
+
+    cursor: pointer; /* Mostra a mãozinha ao passar o mouse */
+
+    transition: 0.2s; /* Faz as mudanças acontecerem suavemente */
+}
+
+.botao-cadastro:hover { /* Configura o botão quando o mouse passa por cima */
+    background: #BDD6FF; /* Muda o tom do fundo */
+
+    color: var(--azul); /* Mantém o texto azul */
+}
+
+.botao-cadastro:active { /* Configura o botão enquanto ele é pressionado */
+    transform: scale(0.99); /* Diminui o botão levemente */
+}
+
+.links { /* Área dos links */
+    width: 100%; /* Ocupa toda a largura */
+
+    text-align: center; /* Centraliza o conteúdo */
+}
+
+.links p { /* Configura o texto dos links */
+    margin-top: 5px; /* Cria espaço acima */
+
+    font-size: 12px; /* Define o tamanho do texto */
+    font-weight: 600; /* Deixa o texto mais forte */
+
+    line-height: 1.4; /* Define o espaço entre as linhas */
+
+    color: var(--azul); /* Define a cor azul */
+}
+
+.links a { /* Configura o link dentro da área */
+    color: var(--azul); /* Define a cor azul */
+
+    text-decoration: none; /* Remove o sublinhado */
+}
+
+.links a:hover { /* Quando o mouse passa sobre o link */
+    text-decoration: underline; /* Adiciona o sublinhado */
+}
+
+.botao-voltar { /* Configura o link de voltar */
+    display: block; /* Faz o link ocupar uma linha */
+
+    width: fit-content; /* Faz a largura se adaptar ao texto */
+
+    margin: 10px auto 0; /* Centraliza e cria espaço acima */
+
+    padding: 0; /* Remove espaçamento interno */
+
+    background: none; /* Remove qualquer fundo */
+
+    border: none; /* Remove qualquer borda */
+
+    color: var(--azul); /* Define a cor azul */
+
+    font-size: 12px; /* Define o tamanho do texto */
+    font-weight: 600; /* Deixa o texto mais forte */
+
+    text-decoration: none; /* Remove o sublinhado */
+
+    cursor: pointer; /* Mostra a mãozinha ao passar o mouse */
+}
+
+.botao-voltar:hover { /* Quando o mouse passa sobre voltar */
+    text-decoration: underline; /* Adiciona o sublinhado */
+}
+
+@media (max-width: 600px) { /* Regras para telas de até 600px, como celulares */
+
+    .pagina { /* Ajusta a página para telas menores */
+        min-height: 100vh; /* Mantém pelo menos a altura da tela */
+
+        padding: 15px 10px; /* Diminui o espaço nas laterais */
+
+        background-position: center; /* Centraliza o fundo */
+        background-size: cover; /* Faz o fundo cobrir a tela */
+    }
+
+    .card { /* Ajusta o card em telas menores */
+        width: 100%; /* Usa toda a largura disponível */
+        max-width: 390px; /* Limita a largura máxima */
+
+        padding: 30px 20px 20px; /* Ajusta o espaço interno */
+    }
+
+    .logo-area { /* Ajusta a área da logo */
+        margin-top: -10px; /* Diminui o espaço no topo */
+        margin-bottom: 20px; /* Aumenta o espaço abaixo da logo */
+    }
+
+    .logo { /* Ajusta a logo */
+        width: 195px; /* Diminui a largura da logo */
+    }
+
+    .cabecalho h1 { /* Ajusta o título em telas menores */
+        font-size: 23px; /* Diminui o tamanho do título */
+    }
+
+    .cabecalho p { /* Ajusta o subtítulo */
+        font-size: 12px; /* Mantém o tamanho do subtítulo */
+    }
+
+    .campo { /* Ajusta os campos */
+        margin-bottom: 14px; /* Aumenta o espaço entre os campos */
+    }
+
+    .campo input { /* Ajusta os inputs */
+        height: 43px; /* Aumenta um pouco a altura */
+    }
+
+    .botao-cadastro { /* Ajusta o botão */
+        height: 46px; /* Define uma altura menor */
+    }
+}
+
+@media (max-width: 380px) { /* Regras para celulares ainda menores */
+
+    .pagina { /* Ajusta a página */
+        padding: 10px; /* Diminui o espaço nas bordas */
+
+        background-size: cover; /* Faz o fundo cobrir a tela */
+    }
+
+    .card { /* Ajusta o card */
+        padding: 25px 17px 18px; /* Diminui o espaço interno */
+    }
+
+    .logo { /* Ajusta a logo */
+        width: 175px; /* Diminui a logo */
+    }
+
+    .cabecalho h1 { /* Ajusta o título */
+        font-size: 21px; /* Diminui o tamanho do título */
+    }
+
+    .cabecalho p { /* Ajusta o subtítulo */
+        font-size: 11px; /* Diminui o tamanho do texto */
+    }
+
+    .campo label { /* Ajusta os nomes dos campos */
+        font-size: 11px; /* Diminui o tamanho */
+    }
+
+    .campo input { /* Ajusta os campos */
+        height: 41px; /* Define a altura */
+        font-size: 11px; /* Diminui o tamanho do texto */
+    }
+
+    .botao-cadastro { /* Ajusta o botão de cadastro */
+        height: 44px; /* Define a altura */
+        font-size: 13px; /* Diminui o tamanho do texto */
+    }
+
+    .links p { /* Ajusta o texto dos links */
+        font-size: 11px; /* Diminui o tamanho */
+    }
+
+    .mensagens p { /* Ajusta as mensagens */
+        font-size: 10px; /* Diminui o tamanho */
+    }
+
+    .aviso-senha { /* Ajusta o aviso da senha */
+        font-size: 9px; /* Diminui o tamanho */
+    }
+
+    .botao-voltar { /* Ajusta o botão/link voltar */
+        font-size: 11px; /* Diminui o tamanho */
+    }
+}

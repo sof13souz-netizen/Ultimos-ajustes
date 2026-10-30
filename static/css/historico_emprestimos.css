@@ -1,0 +1,447 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* CONFIGURAÇÕES GERAIS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --azul: #1768f9;
+    --azul-escuro: #153779;
+    --azul-claro: #d1e2ff;
+    --fundo: #f2f5fa;
+    --verde: #07965e;
+    --vermelho: #ff4b55;
+    --branco: #ffffff;
+    --borda: #d3e2fa;
+    --cinza: #7186ad;
+    --texto: #111827;
+}
+
+html {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    font-family: 'Inter', Arial, sans-serif;
+    background: var(--fundo);
+    color: var(--azul-escuro);
+}
+
+/* CABEÇALHO */
+header {
+    width: 100%;
+    min-height: 81px;
+    padding: 8px 5.3%;
+    background: var(--branco);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.20);
+    position: relative;
+    z-index: 2;
+}
+
+header .logo {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+header img.logo {
+    display: block;
+    width: 150px;
+    height: 58px;
+    object-fit: contain;
+    object-position: left center;
+}
+
+/* MENU DE NAVEGAÇÃO */
+nav {
+    min-height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 28px;
+}
+
+nav a {
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    color: var(--azul-escuro);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+}
+
+nav a:hover {
+    color: var(--azul);
+}
+
+nav a.ativo {
+    color: var(--azul-escuro);
+}
+
+nav a.ativo::after {
+    content: "";
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--azul);
+    border-radius: 5px;
+}
+
+/* CONTEÚDO PRINCIPAL */
+.pagina {
+    width: calc(100% - 80px);
+    max-width: 1100px;
+    margin: 35px auto 45px;
+}
+
+.pagina > section {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+}
+
+/* TÍTULO */
+.titulo {
+    display: flex;
+    align-items: center;
+    margin: 0 0 2px;
+}
+
+.titulo h1 {
+    color: var(--azul-escuro);
+    font-size: 24px;
+    line-height: 1.35;
+    font-weight: 800;
+}
+
+.titulo h1::after {
+    content: none;
+}
+
+/* ÁREA DO BOTÃO DE SIMULAÇÃO */
+.pagina > section > div:nth-child(2) {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: -14px;
+    margin-bottom: 6px;
+}
+
+/* BOTÃO SIMULAR NOVO EMPRÉSTIMO */
+.botao_simular_emprestimo {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 21px;
+    border: 1px solid #80a8ff;
+    border-radius: 13px;
+    background: var(--azul-claro);
+    color: var(--azul);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.botao_simular_emprestimo:hover {
+    background: #bdd5ff;
+    transform: translateY(-1px);
+}
+
+/* CONTAINER DA TABELA */
+.tabela-container {
+    width: 100%;
+    overflow-x: auto;
+    background: var(--branco);
+    border: 1px solid #e1eaff;
+    border-radius: 12px 12px 0 0;
+}
+
+/* TABELA */
+table {
+    width: 100%;
+    min-width: 650px;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+/* CABEÇALHO DA TABELA */
+thead {
+    background: #d1e2ff;
+}
+
+thead th {
+    height: 57px;
+    padding: 15px 18px;
+    color: var(--azul-escuro);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    border: none;
+}
+
+/* LINHAS DA TABELA */
+tbody tr {
+    height: 60px;
+    transition: background 0.2s ease;
+}
+
+tbody tr:nth-child(odd) {
+    background: #ffffff;
+}
+
+tbody tr:nth-child(even) {
+    background: #f2f5fa;
+}
+
+tbody tr:hover {
+    background: #e8f0ff;
+}
+
+tbody td {
+    padding: 15px 18px;
+    color: var(--texto);
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    border-bottom: 1px solid var(--borda);
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* LINKS DE VISUALIZAÇÃO */
+td.descricao a {
+    color: var(--azul-escuro);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+td.descricao a:hover {
+    color: var(--azul);
+    text-decoration: underline;
+}
+
+/* VALORES */
+td.valor {
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+td.valor.positivo {
+    color: var(--verde);
+}
+
+td.valor.negativo {
+    color: var(--vermelho);
+}
+
+/* CATEGORIA */
+td.categoria {
+    color: var(--texto);
+    font-weight: 600;
+}
+
+/* MENSAGEM DE TABELA VAZIA */
+tbody td[colspan] {
+    height: 70px;
+    padding: 20px;
+    text-align: center;
+    color: var(--cinza);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* BOTÕES INFERIORES */
+.botoes-inferiores {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 56px;
+    margin: 14px auto 0;
+}
+
+.botoes-inferiores a.voltar,
+.botoes-inferiores a.baixar_pdf {
+    width: 211px;
+    height: 44px;
+    padding: 0 20px;
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 13px;
+    font-family: 'Inter', Arial, sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+    box-sizing: border-box;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+/* BOTÃO BAIXAR PDF */
+.botoes-inferiores a.baixar_pdf {
+    background-color: #fff0f0;
+    color: #ff4b55;
+    border: 1px solid #ff9ba0;
+}
+
+.botoes-inferiores a.baixar_pdf:hover {
+    background-color: #ffe0e0;
+    transform: translateY(-1px);
+}
+
+/* BOTÃO VOLTAR */
+.botoes-inferiores a.voltar {
+    background-color: #d1e2ff;
+    color: #1768f9;
+    border: 1px solid #80a8ff;
+}
+
+.botoes-inferiores a.voltar:hover {
+    background-color: #bdd5ff;
+    transform: translateY(-1px);
+}
+
+/* TABLETS */
+@media (max-width: 900px) {
+    header {
+        padding: 8px 3%;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    nav {
+        gap: 18px;
+    }
+
+    .pagina {
+        width: calc(100% - 48px);
+        margin-top: 30px;
+    }
+
+    .titulo h1 {
+        font-size: 22px;
+    }
+
+    .botoes-inferiores {
+        gap: 25px;
+    }
+}
+
+/* CELULARES */
+@media (max-width: 600px) {
+    header {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 10px 18px;
+        gap: 5px;
+    }
+
+    header img.logo {
+        width: 140px;
+        height: 48px;
+    }
+
+    nav {
+        width: 100%;
+        min-height: 38px;
+        justify-content: flex-start;
+        gap: 20px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+
+    nav a {
+        min-height: 34px;
+        font-size: 11px;
+        flex-shrink: 0;
+    }
+
+    nav a.ativo::after {
+        bottom: 0;
+    }
+
+    .pagina {
+        width: calc(100% - 28px);
+        margin: 25px auto 35px;
+    }
+
+    .pagina > section {
+        gap: 14px;
+    }
+
+    .titulo h1 {
+        font-size: 20px;
+    }
+
+    .pagina > section > div:nth-child(2) {
+        margin-top: 0;
+        margin-bottom: 4px;
+    }
+
+    .botao_simular_emprestimo {
+        width: 100%;
+        min-height: 42px;
+        font-size: 13px;
+    }
+
+    .tabela-container {
+        border-radius: 10px 10px 0 0;
+    }
+
+    table {
+        min-width: 650px;
+    }
+
+    thead th {
+        height: 48px;
+        padding: 12px;
+        font-size: 12px;
+    }
+
+    tbody tr {
+        height: 52px;
+    }
+
+    tbody td {
+        padding: 12px;
+        font-size: 11px;
+    }
+
+    .botoes-inferiores {
+        gap: 12px;
+        margin-top: 12px;
+    }
+
+    .botoes-inferiores a.voltar,
+    .botoes-inferiores a.baixar_pdf {
+        width: auto;
+        min-width: 0;
+        flex: 1;
+        height: 42px;
+        padding: 0 8px;
+        font-size: 12px;
+    }
+}

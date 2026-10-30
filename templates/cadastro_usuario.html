@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - CredMais</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cadastro.css') }}">
+    <link rel="icon" type="image/png" href="../static/uploads/LogoSoloCrediMais.png">
+</head>
+
+<body>
+    <div class="pagina">
+        <div class="card">
+            <div class="logo-area">
+                <img class="logo" src="{{ url_for('logo') }}" alt="Logo CredMais">
+            </div>
+
+            <div class="cabecalho">
+                <h1>Crie sua conta</h1>
+                <p> Informe seus dados para criar sua conta.</p>
+            </div>
+
+            {% with mensagens = get_flashed_messages(with_categories=true) %}
+                {% if mensagens %}
+                    <div class="mensagens-lista">
+                        {% for categoria, mensagem in mensagens %}
+                            <div class="mensagens {{ 'sucesso' if categoria == 'sucesso' else 'erro' }}">
+                                <p>{{ mensagem }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('cadastro') }}" method="POST">
+
+                <div class="campo">
+
+                    <label for="nome"> Nome </label>
+                    <input type="text" id="nome" name="nome" placeholder="Digite seu nome" required>
+
+                </div>
+
+                <div class="campo">
+
+                    <label for="email">E-mail </label>
+                    <input type="email" id="email" name="email" placeholder="Digite seu e-mail" required>
+
+                </div>
+
+                <div class="campo">
+
+                    <label for="senha"> Senha </label>
+                    <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="confirmar_senha">Confirmação de Senha</label>
+                    <input type="password" id="confirmar_senha" name="confirmar_senha" placeholder="Confirme sua senha" required>
+
+                </div>
+
+                <p class="aviso-senha">Mínimo de 8 caracteres, com letra maiúscula, minúscula, número e caractere especial.</p>
+
+                <button type="submit" class="botao-cadastro"> Criar Conta </button>
+
+            </form>
+
+            <div class="links">
+
+                <p> Já possui uma conta?
+                    <a href="{{ url_for('login') }}"> Entrar </a>
+                </p>
+
+            </div>
+
+            <a href="{{ url_for('inicio') }}" class="botao-voltar"> Voltar </a>
+        </div>
+    </div>
+
+</body>
+</html>
