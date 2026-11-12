@@ -445,3 +445,46 @@ tbody td[colspan] {
         font-size: 12px;
     }
 }
+
+.mensagem { width: min(92%, 900px); margin: 12px auto; padding: 11px 15px; border-radius: 8px; font-size: 13px; background: #eef2f7; color: #27364b; }
+.mensagem.sucesso { background: #e4f6eb; color: #176b3a; }
+.mensagem.erro { background: #fdeaea; color: #a52a2a; }
+.linha-clicavel { cursor: pointer; }
+.linha-clicavel:hover { background: #f0f5ff; }
+.nota-classificacao { display:block; color:#444; font-size:11px; margin-top:5px; }
+.campo-dinheiro { font-variant-numeric: tabular-nums; }
+
+.mensagem { width: 100%; margin-bottom: 20px; padding: 12px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; }
+.mensagem.erro { background: #ffe8e6; color: #c92c24; }
+.mensagem.sucesso { background: #e1f7ed; color: #08794b; }
+
+/* filtro de período igual ao de movimentações */
+.seletor-periodo {
+    height: 26px;
+    display: flex;
+    width: fit-content;
+    border: 1px solid #1769ff;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #ffffff;
+    margin: 0 auto 12px;
+}
+.seletor-periodo a {
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid #1769ff;
+    color: #123475;
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+.seletor-periodo a:first-child { border-left: none; }
+.seletor-periodo a:hover { background: #eef4ff; }
+.seletor-periodo a.selecionado { background: #d2e3ff; }
+@media (max-width: 650px) {
+    .seletor-periodo { width: 100%; height: 36px; }
+    .seletor-periodo a { flex: 1; padding: 0 4px; font-size: 12px; }
+}

@@ -105,21 +105,11 @@ body {
     margin: 0 5px 20px;
 }
 
-.icone-titulo {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--azul);
-    flex-shrink: 0;
-}
-
 .icone-titulo img {
-    width: 25px;
-    height: 25px;
+    width: 48px;
+    height: 48px;
     object-fit: contain;
+    margin-top: 2px;
 }
 
 .titulo-pagina h1 {
@@ -347,6 +337,7 @@ body {
     color: white;
     background: var(--azul);
     border: 1px solid var(--azul);
+    min-width: 320px;
 }
 
 .botao-realizar:hover {
@@ -558,3 +549,17 @@ body {
 .risco-medio { color: #b7791f; }
 .botoes form { margin: 0; }
 .botoes form button { font: inherit; cursor: pointer; }
+
+.mensagem { width: min(92%, 900px); margin: 12px auto; padding: 11px 15px; border-radius: 8px; font-size: 13px; background: #eef2f7; color: #27364b; }
+.mensagem.sucesso { background: #e4f6eb; color: #176b3a; }
+.mensagem.erro { background: #fdeaea; color: #a52a2a; }
+.linha-clicavel { cursor: pointer; }
+.linha-clicavel:hover { background: #f0f5ff; }
+.nota-classificacao { display:block; color:#444; font-size:11px; margin-top:5px; }
+.campo-dinheiro { font-variant-numeric: tabular-nums; }
+
+.mensagem { width: 100%; margin-bottom: 20px; padding: 12px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; }
+.mensagem.erro { background: #ffe8e6; color: #c92c24; }
+.mensagem.sucesso { background: #e1f7ed; color: #08794b; }
+
+h1, h2, h3, strong, .valor, .resultado-valor { overflow-wrap: anywhere; word-break: break-word; }

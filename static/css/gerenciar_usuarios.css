@@ -1,0 +1,44 @@
+.conteudo-usuarios { width: 85%; max-width: 1150px; margin: 28px auto 40px; }
+.titulo-usuarios { margin: 0 0 24px; color: #123475; font-size: 25px; font-weight: 800; }
+.resumos-usuarios { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-bottom: 28px; }
+.resumos-usuarios .cartao-resumo { min-height: 88px; padding: 12px; grid-template-columns: 40px minmax(0, 1fr) auto; column-gap: 9px; }
+.resumos-usuarios .icone { width: 40px; height: 40px; }
+.resumos-usuarios .icone img { width: 34px; height: 34px; }
+.resumos-usuarios .cartao-resumo h2 { white-space: normal; font-size: 15px; line-height: 1.25; }
+.resumos-usuarios .resumo-valor strong { font-size: 23px; color: #123475; }
+.tabela-usuarios { margin-top: 8px; }
+.tabela-usuarios th:nth-child(1) { width: 25%; }
+.tabela-usuarios th:nth-child(2) { width: 35%; }
+.tabela-usuarios th:nth-child(3) { width: 22%; }
+.tabela-usuarios th:nth-child(4) { width: 18%; }
+.linha-usuario { cursor: pointer; }
+.linha-usuario:hover { background: #e4eeff !important; }
+.status-usuario { display: inline-block; padding: 6px 12px; border-radius: 15px; font-size: 12px; font-weight: 700; }
+.status-usuario.ativo { color: #08794b; background: #e1f7ed; }
+.status-usuario.bloqueado { color: #c92c24; background: #ffe8e6; }
+.status-usuario.inativo { color: #6b7280; background: #eceff3; }
+.pagina-editar-usuario .titulo-pagina { margin-bottom: 20px; }
+.pagina-editar-usuario .cartao-edicao .campo select { width: 100%; min-height: 42px; padding: 10px 12px; border: 1px solid #cbd8e8; border-radius: 8px; background: #fff; color: #123475; font: inherit; }
+.pagina-editar-usuario .cartao-edicao .campo { margin-bottom: 16px; }
+.pagina-editar-usuario .cartao-edicao .botoes { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+.pagina-editar-usuario .cartao-edicao .botao-excluir { background: #e64a4a; }
+.pagina-editar-usuario .cartao-edicao .botao-excluir:hover { background: #c93434; }
+.iconeg img {
+    width: 45px;
+    height: 45px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+@media (max-width: 850px) {
+    .resumos-usuarios { grid-template-columns: 1fr; gap: 12px; }
+    .resumos-usuarios .cartao-resumo { min-height: 76px; }
+    .conteudo-usuarios { width: 92%; }
+}
+@media (max-width: 650px) {
+    .tabela-usuarios table { min-width: 650px; }
+    .pagina-editar-usuario .cartoes { grid-template-columns: 1fr; }
+    .pagina-editar-usuario .pagina { width: 92%; }
+}

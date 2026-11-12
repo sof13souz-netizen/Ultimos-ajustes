@@ -129,10 +129,10 @@ h1, h2, h3 {
 }
 
 /* ---------- banner ----------
-   o fundo azul e verde é uma imagem só, trocar o nome do arquivo aqui.
+   o fundo azul e verde é uma imagem só.
    o "cover" faz ela preencher tudo sem distorcer */
 .banner {
-  background-image: url("../../uploads/Wallpaper.png");
+  background-image: url("../../static/uploads/fundo.png");
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -369,7 +369,6 @@ h1, h2, h3 {
   width: 44px;
   height: 44px;
   flex-shrink: 0;
-  transform: rotate(90deg);
 }
 
 .seta {
@@ -587,4 +586,3 @@ h1, h2, h3 {
   .rodape-direitos { justify-content: center; }
   .rodape-direitos span { font-size: 0.8rem; font-weight: 600; }
 }
-

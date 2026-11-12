@@ -13,3 +13,15 @@ function mostrarFoto(input) {
         textoSemFoto.hidden = true;
     }
 }
+
+function abrirConfirmacao() {
+    document.getElementById("modal-excluir").style.display = "flex";
+}
+
+function fecharConfirmacao() {
+    document.getElementById("modal-excluir").style.display = "none";
+}
+
+function confirmarExclusao() {
+    document.getElementById("form-excluir").submit();
+}

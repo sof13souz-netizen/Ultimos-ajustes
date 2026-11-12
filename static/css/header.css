@@ -156,3 +156,26 @@
         overflow-x: auto;
     }
 }
+
+.cabecalho-padrao { padding-left: 3.5%; padding-right: 3.5%; gap: 14px; }
+.cabecalho-simbolo { height: 54px; }
+.cabecalho-nome { font-size: 24px; }
+.cabecalho-menu { flex: 1; justify-content: center; gap: 24px; }
+.cabecalho-usuario { display:flex; align-items:center; gap:10px; position:relative; flex-shrink:0; }
+.dados-usuario { display:flex; flex-direction:column; align-items:flex-end; position:relative; }
+.nome-usuario-header { color:#153779; font-size:14px; font-weight:700; max-width:175px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.email-usuario-header { color:#888; font-size:11px; max-width:175px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.botao-perfil-header { border:0; background:transparent; display:flex; align-items:center; gap:5px; padding:0; cursor:pointer; }
+.foto-perfil-header { width:43px; height:43px; border-radius:50%; object-fit:cover; border:2px solid #e3eaf7; }
+.seta-perfil-header { width:13px; height:13px; object-fit:contain; }
+.menu-perfil-header { display:none; position:absolute; z-index:10; top:100%; right:0; min-width:140px; padding-top:8px; text-align:center; }
+.botao-editar-perfil,.botao-sair-header { display:block; width:100%; box-sizing:border-box; padding:9px 12px; background:#e5e5e5; color:#333; border:0; border-radius:6px; text-decoration:none; font-size:13px; cursor:pointer; margin-top:4px; }
+.botao-editar-perfil:hover,.botao-sair-header:hover { background:#d4d4d4; }
+.fundo-modal { position:fixed; inset:0; z-index:9999; background:rgba(20,30,50,.45); align-items:center; justify-content:center; padding:20px; }
+.fundo-modal .modal { background:#fff; border-radius:14px; padding:28px; width:100%; max-width:360px; text-align:center; box-shadow:0 10px 35px #0002; }
+.fundo-modal .botoes-modal { display:flex; justify-content:center; gap:12px; margin-top:20px; }
+.fundo-modal button { border:0; border-radius:7px; padding:10px 20px; cursor:pointer; }
+.fundo-modal .botao-sair { background:#e74b4b; color:white; }
+.fundo-modal .botao-cancelar { background:#e7e7e7; color:#333; }
+@media(max-width:1100px) { .cabecalho-menu { gap:14px; } .cabecalho-usuario { gap:6px; } .nome-usuario-header,.email-usuario-header { max-width:125px; } }
+@media(max-width:800px) { .cabecalho-padrao { align-items:center; } .cabecalho-menu { justify-content:center; } .cabecalho-usuario { align-self:flex-end; } }
