@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Usuário | CredMais</title>
+    <link rel="icon" href="{{ url_for('static', filename='uploads/LogoSoloCrediMais.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/perfil.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/gerenciar_usuarios.css') }}">
+    <script src="{{ url_for('static', filename='js/header.js') }}" defer></script>
+</head>
+<body>
+{% set pagina_ativa = 'usuarios' %}
+<header class="cabecalho-padrao">
+    <a href="{{ url_for('dashboard') }}" class="cabecalho-logo"><img src="{{ url_for('static', filename='uploads/LogoSoloCrediMais.png') }}" alt="Logo CredMais" class="cabecalho-simbolo"><span class="cabecalho-texto"><span class="cabecalho-nome"><span class="nome-azul">Cred</span><span class="nome-verde">Mais</span></span><span class="cabecalho-slogan">Gestão de crédito para<br>pequenos negócios</span></span></a>
+    <nav class="cabecalho-menu"><a href="{{ url_for('dashboard') }}">Dashboard</a>{% if eh_admin %}<a href="{{ url_for('listar_taxas') }}">Taxas</a>{% endif %}<a href="{{ url_for('simulacao') }}">Simulação</a><a href="{{ url_for('historico_emprestimos') }}">Empréstimos</a><a href="{{ url_for('movimentacoes') }}">Movimentações</a><a href="{{ url_for('gerenciar_usuarios') }}" class="ativo">Gerenciar Usuários</a></nav>
+    <div class="cabecalho-usuario"><button type="button" class="botao-perfil-header" onclick="alternarMenuPerfil()" aria-label="Abrir opções do perfil"><img class="foto-perfil-header" src="{{ url_for('static', filename='uploads/' ~ (session.get('usuario_foto') or 'perfil-padrao.png')) }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='uploads/perfil-padrao.png') }}'" alt="Foto de perfil"></button><div class="dados-usuario"><span class="nome-usuario-header">{{ session.get('usuario_nome', '') }}</span><span class="email-usuario-header">{{ session.get('usuario_email', '') }}</span><button type="button" class="seta-perfil-header" onclick="alternarMenuPerfil()"><img src="{{ url_for('static', filename='uploads/seta_indicadora.png') }}" alt=""></button><div class="menu-perfil-header" id="menuPerfilHeader"><a href="{{ url_for('perfil') }}" class="botao-editar-perfil">Editar perfil</a><button type="button" class="botao-sair-header" onclick="window.location.href='{{ url_for('logout') }}'">Sair</button></div></div></div>
+</header>
+<main class="pagina pagina-editar-usuario">
+    <section class="titulo-pagina"><img class="banner-imagem" src="{{ url_for('static', filename='uploads/icone-grafico.png') }}" alt=""><div><h1>Editar usuário</h1><p>Atualize as informações da conta selecionada.</p></div></section>
+    {% with mensagens = get_flashed_messages(with_categories=true) %}{% for categoria_msg, mensagem in mensagens %}<div class="mensagem {{ categoria_msg }}">{{ mensagem }}</div>{% endfor %}{% endwith %}
+    <div class="cartoes">
+        <section class="cartao cartao-visual"><h2>Perfil do usuário</h2><div class="foto-perfil"><label for="foto" class="editar-foto"><img id="imagem-perfil" src="{% if foto_perfil %}{{ url_for('static', filename='uploads/' + foto_perfil) }}{% endif %}" alt="Foto do usuário" {% if not foto_perfil %}hidden{% endif %}><span id="texto-sem-foto" {% if foto_perfil %}hidden{% endif %}>Adicionar foto</span></label><label for="foto" class="texto-editar-foto">Editar foto</label></div><h3 id="visual-nome">{{ nome }}</h3><p class="descricao-perfil">Usuário CredMais</p><div class="dados-perfil"><div class="dado"><span>Nome completo</span><p>{{ nome }}</p></div><div class="dado"><span>E-mail</span><p>{{ email }}</p></div><div class="dado"><span>Situação</span><p>{% if bloqueado %}Bloqueado{% elif ativo %}Ativo{% else %}Inativo{% endif %}</p></div></div></section>
+        <section class="cartao cartao-edicao"><h2>Editar informações</h2><p class="texto-apoio">Mantenha os dados do usuário atualizados.</p>
+            <form id="form-editar-perfil" method="POST" action="{{ url_for('editar_usuario_admin', id_usuario=id_usuario) }}" enctype="multipart/form-data">
+                <input type="file" id="foto" name="foto" accept=".jpg,.jpeg,.png,.webp" hidden onchange="mostrarFoto(this)">
+                <div class="campo"><label for="nome">Nome</label><input type="text" id="nome" name="nome" maxlength="100" value="{{ nome }}" required></div>
+                <div class="campo"><label for="email">E-mail</label><input type="email" id="email" name="email" maxlength="100" value="{{ email }}" required></div>
+                <div class="campo"><label for="tipo">Tipo de perfil</label><select id="tipo" name="tipo"><option value="1" {% if tipo == 1 %}selected{% endif %}>Usuário</option><option value="2" {% if tipo == 2 %}selected{% endif %}>Administrador</option></select></div>
+                <div class="campo"><label for="nova_senha">Nova senha</label><input type="password" id="nova_senha" name="nova_senha"><small class="ajuda">Deixe em branco se não quiser alterar a senha.</small></div>
+                <div class="botoes"><button type="submit" class="botao">Salvar alterações</button><button type="button" class="botao-excluir" onclick="abrirConfirmacao()">{{ 'Desbloquear perfil' if bloqueado else 'Excluir usuário' }}</button></div>
+            </form>
+        </section>
+    </div>
+    <div id="modal-excluir" class="modal-fundo"><div class="modal"><div class="icone-modal"><span>!</span></div><h2>{{ 'Deseja desbloquear este perfil?' if bloqueado else 'Deseja excluir este usuário?' }}</h2><p>{% if bloqueado %}O usuário poderá acessar o sistema novamente.{% else %}Essa ação não poderá ser desfeita.{% endif %}</p><div class="botoes-modal"><button type="button" class="confirmar-exclusao" onclick="confirmarExclusao()">{{ 'Desbloquear' if bloqueado else 'Excluir' }}</button><button type="button" class="cancelar-exclusao" onclick="fecharConfirmacao()">Cancelar</button></div></div></div>
+    <form id="form-excluir" method="POST" action="{{ url_for('excluir_usuario_admin', id_usuario=id_usuario) }}"></form>
+</main>
+<script>
+function mostrarFoto(input) { if (input.files && input.files[0]) { var leitor = new FileReader(); leitor.onload = function(e) { var imagem = document.getElementById('imagem-perfil'); imagem.src = e.target.result; imagem.hidden = false; document.getElementById('texto-sem-foto').hidden = true; }; leitor.readAsDataURL(input.files[0]); } }
+function abrirConfirmacao() { document.getElementById('modal-excluir').style.display = 'flex'; }
+function fecharConfirmacao() { document.getElementById('modal-excluir').style.display = 'none'; }
+function confirmarExclusao() { document.getElementById('form-excluir').submit(); }
+function alternarMenuPerfil() { var menu = document.getElementById('menuPerfilHeader'); if (menu) menu.classList.toggle('menu-aberto'); }
+</script>
+</body></html>

@@ -5,19 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil Financeiro | CredMais</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/perfil.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+    <script src="{{ url_for('static', filename='js/header.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/perfil.js') }}" defer></script>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='uploads/LogoSoloCrediMais.png') }}">
 </head>
 <body>
-    <header>
-        <img class="logo" src="{{ url_for('logo_dashboard') }}" alt="Logo CredMais">
-        <nav>
+    {% set pagina_ativa = 'perfil' %}
+    <header class="cabecalho-padrao">
+        <a href="{{ url_for('dashboard') }}" class="cabecalho-logo">
+            <img src="{{ url_for('static', filename='uploads/LogoSoloCrediMais.png') }}" alt="Logo CredMais" class="cabecalho-simbolo">
+            <span class="cabecalho-texto"><span class="cabecalho-nome"><span class="nome-azul">Cred</span><span class="nome-verde">Mais</span></span><span class="cabecalho-slogan">Gestão de crédito para<br>pequenos negócios</span></span>
+        </a>
+        <nav class="cabecalho-menu">
             <a href="{{ url_for('dashboard') }}">Dashboard</a>
-            <a href="{{ url_for('perfil') }}" >Perfil</a>
+            {% if eh_admin %}<a href="{{ url_for('listar_taxas') }}">Taxas</a>{% endif %}
             <a href="{{ url_for('simulacao') }}">Simulação</a>
             <a href="{{ url_for('historico_emprestimos') }}">Empréstimos</a>
             <a href="{{ url_for('movimentacoes') }}">Movimentações</a>
         </nav>
+        <div class="cabecalho-usuario">
+            <button type="button" class="botao-perfil-header" onclick="alternarMenuPerfil()" aria-label="Abrir opções do perfil"><img class="foto-perfil-header" src="{{ url_for('static', filename='uploads/' ~ (session.get('usuario_foto') or 'perfil-padrao.png')) }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='uploads/perfil-padrao.png') }}'" alt="Foto de perfil"></button>
+            <div class="dados-usuario"><span class="nome-usuario-header">{{ session.get('usuario_nome', '') }}</span><span class="email-usuario-header">{{ session.get('usuario_email', '') }}</span><button type="button" class="seta-perfil-header" onclick="alternarMenuPerfil()"><img src="{{ url_for('static', filename='uploads/seta_indicadora.png') }}" alt=""></button><div class="menu-perfil-header" id="menuPerfilHeader"><a href="{{ url_for('perfil') }}" class="botao-editar-perfil">Editar perfil</a><button type="button" class="botao-sair-header" onclick="window.location.href='{{ url_for('logout') }}'">Sair</button></div></div>
+        </div>
     </header>
 
     <main class="pagina">
@@ -25,7 +35,7 @@
             <img class="banner-imagem" src="{{ url_for('static', filename='uploads/icone-grafico.png') }}" alt="Ícone do perfil">
             <div>
                 <h1>Perfil Financeiro</h1>
-                <p>Visualize e atualize suas informações pessoais.</p>
+                <p>Visualize e atualize as suas informações pessoais.</p>
             </div>
         </section>
 
@@ -46,20 +56,19 @@
                 <div class="foto-perfil">
                     <label for="foto" class="editar-foto">
 
-                        <img id="imagem-perfil" src="{% if foto_perfil %}{{ url_for('static', filename='uploads/' + foto_perfil) }}{% endif %}" alt="" {% if not foto_perfil %}hidden{% endif %}>
+                        <img id="imagem-perfil" src="{{ url_for('static', filename='uploads/' + (foto_perfil or 'perfil-padrao.png')) }}" alt="Foto de perfil" onerror="this.onerror=null; this.src='{{ url_for('static', filename='uploads/perfil-padrao.png') }}'">
 
-                        <span id="texto-sem-foto" {% if foto_perfil %}hidden{% endif %}>
-                            Adicionar foto
-                        </span>
+                        <span id="texto-sem-foto" hidden>Adicionar foto</span>
                     </label>
 
                     <label for="foto" class="texto-editar-foto">
                         Editar foto
                     </label>
+                    <button type="button" class="botao-remover-foto" onclick="removerFoto()" {% if not foto_perfil %}disabled{% endif %}>Remover foto</button>
                 </div>
 
                 <h3 id="visual-nome">{{ nome }}</h3>
-                <p class="descricao-perfil">Usuário CredMais</p>
+                <p class="descricao-perfil"> Usuário CredMais</p>
 
                 <div class="dados-perfil">
                     <div class="dado">
@@ -75,7 +84,7 @@
 
             <section class="cartao cartao-edicao">
                 <h2>Editar informações</h2>
-                <p class="texto-apoio">Mantenha seus dados atualizados.</p>
+                <p class="texto-apoio"> Mantenha os seus dados atualizados.</p>
 
                 <form id="form-editar-perfil" method="POST" action="{{ url_for('perfil') }}" enctype="multipart/form-data">
                     <input
@@ -108,11 +117,70 @@
                         <small class="ajuda">Deixe em branco se não quiser alterar a senha.</small>
                     </div>
 
-                    <p id="mensagem-js" class="mensagem-js" role="alert"></p>
-                    <button type="submit" class="botao">Salvar alterações</button>
+
+                    <div class="botoes">
+                        <button type="submit" class="botao">Salvar alterações</button>
+
+                        <button type="button" class="botao-excluir" onclick="abrirConfirmacao()"> Excluir perfil </button>
+                    </div>
+
                 </form>
             </section>
         </div>
+
+        <form id="form-remover-foto" method="POST" action="{{ url_for('excluir_foto_perfil') }}"></form>
+
+        <div class="fundo-modal" id="modal-remover-foto" style="display:none;" role="dialog" aria-modal="true">
+            <div class="modal">
+                <div class="icone-modal"><span>!</span></div>
+                <h2>Remover foto de perfil?</h2>
+                <p>Você voltará a usar a imagem padrão.</p>
+                <div class="botoes-modal">
+                    <button type="button" class="botao-sair" onclick="confirmarRemoverFoto()">Remover</button>
+                    <button type="button" class="botao-cancelar" onclick="fecharRemoverFoto()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Janela de confirmação de exclusão -->
+        <div id="modal-excluir" class="modal-fundo">
+
+            <div class="modal">
+
+                <div class="icone-modal">
+                    <span>!</span>
+                </div>
+
+                <h2>Deseja excluir seu perfil?</h2>
+                <p>Essa ação não poderá ser desfeita.</p>
+
+                <div class="botoes-modal">
+                    <button type="button" class="confirmar-exclusao" onclick="confirmarExclusao()"> Excluir </button>
+                    <button type="button" class="cancelar-exclusao" onclick="fecharConfirmacao()"> Cancelar </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulário separado para excluir -->
+        <form id="form-excluir" method="POST" action="{{ url_for('excluir_perfil') }}"></form>
     </main>
+<script>
+function alternarMenuPerfil() { var menu = document.getElementById('menuPerfilHeader'); if (menu) menu.classList.toggle('menu-aberto'); }
+function removerFoto() {
+    document.getElementById("modal-remover-foto").style.display = "flex";
+}
+function fecharRemoverFoto() {
+    document.getElementById("modal-remover-foto").style.display = "none";
+}
+function confirmarRemoverFoto() {
+    document.getElementById("form-remover-foto").submit();
+}
+document.getElementById("modal-remover-foto").addEventListener("click", function(event) {
+    if (event.target === this) fecharRemoverFoto();
+});
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") fecharRemoverFoto();
+});
+</script>
 </body>
 </html>

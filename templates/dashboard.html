@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -10,6 +9,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style_dashboard.css') }}">
 
+    <script src="{{ url_for('static', filename='js/header.js') }}" defer></script>
 </head>
 
 <body>
@@ -26,14 +26,29 @@
     </a>
     <nav class="cabecalho-menu">
         <a href="{{ url_for('dashboard') }}" class="{% if pagina_ativa == 'dashboard' %}ativo{% endif %}">Dashboard</a>
-        <a href="{{ url_for('perfil') }}" class="{% if pagina_ativa == 'perfil' %}ativo{% endif %}">Perfil</a>
-        {% if eh_admin %}
-        <a href="{{ url_for('listar_taxas') }}" class="{% if pagina_ativa == 'taxas' %}ativo{% endif %}">Taxas</a>
-        {% endif %}
+        {% if eh_admin %}<a href="{{ url_for('listar_taxas') }}" class="{% if pagina_ativa == 'taxas' %}ativo{% endif %}">Taxas</a>{% endif %}
         <a href="{{ url_for('simulacao') }}" class="{% if pagina_ativa == 'simulacao' %}ativo{% endif %}">Simulação</a>
         <a href="{{ url_for('historico_emprestimos') }}" class="{% if pagina_ativa == 'emprestimos' %}ativo{% endif %}">Empréstimos</a>
         <a href="{{ url_for('movimentacoes') }}" class="{% if pagina_ativa == 'movimentacoes' %}ativo{% endif %}">Movimentações</a>
     </nav>
+    {% if session.get('usuario_id') %}
+    <div class="cabecalho-usuario">
+        <button type="button" class="botao-perfil-header" onclick="alternarMenuPerfil()" aria-label="Abrir opções do perfil" aria-expanded="false">
+            <img class="foto-perfil-header" src="{{ url_for('static', filename='uploads/' ~ (session.get('usuario_foto') or 'perfil-padrao.png')) }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='uploads/perfil-padrao.png') }}'" alt="Foto de perfil">
+        </button>
+        <div class="dados-usuario">
+            <span class="nome-usuario-header">{{ session.get('usuario_nome', '') }}</span>
+            <span class="email-usuario-header">{{ session.get('usuario_email', '') }}</span>
+            <button type="button" class="seta-perfil-header" onclick="alternarMenuPerfil()" aria-label="Mostrar opções do perfil" aria-expanded="false">
+                <img src="{{ url_for('static', filename='uploads/seta_indicadora.png') }}" alt="">
+            </button>
+            <div class="menu-perfil-header" id="menuPerfilHeader">
+                <a href="{{ url_for('perfil') }}" class="botao-editar-perfil">Editar perfil</a>
+                <button type="button" class="botao-sair-header" onclick="abrirModal()">Sair</button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </header>
 
 
@@ -120,15 +135,15 @@
                     <div class="conteudo-acao">
                         <h2>Simule um novo crédito</h2>
                         <p>Veja a parcela, o comprometimento da renda e o risco antes de contratar.</p>
-                        <button type="button" onclick="window.location.href='{{ url_for('simulacao') }}'">Simular empréstimo</button>
+                        <button type="button" class="simulacao" onclick="window.location.href='{{ url_for('simulacao') }}'">Simular empréstimo</button>
                     </div>
                 </div>
-                <div class="card-acao">
+                <div class="card-acao2">
                     <div class="icone"><img src="/escudo" alt="Ícone de escudo"></div>
-                    <div class="conteudo-acao">
+                    <div class="conteudo-acao2">
                         <h2>Situação financeira</h2>
                         <p>Veja suas receitas, despesas e movimentações.</p>
-                        <button type="button" onclick="window.location.href='{{ url_for('movimentacoes') }}'">Navegar</button>
+                        <button type="button" class="situacao" onclick="window.location.href='{{ url_for('movimentacoes') }}'">Navegar</button>
                     </div>
                 </div>
             </div>
@@ -141,6 +156,15 @@
                         <p>{{ proxima_parcela_data }}</p>
                     </div>
                 </div>
+                {% if eh_admin %}
+                <div class="acoes-admin-sair">
+                    <a href="{{ url_for('gerenciar_usuarios') }}" class="card-sair card-gerenciar">
+                        <div>
+                            <div class="icone"><img src="{{ url_for('static', filename='uploads/gerenciar_usuarios.png') }}" alt="Ícone de gerenciar usuários"></div>
+                            <p>Gerenciar Usuários</p>
+                        </div>
+                    </a>
+                {% endif %}
                 <div class="card-sair" onclick="abrirModal()" role="button" tabindex="0"
                      onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirModal(); }">
                     <div>
@@ -148,111 +172,59 @@
                         <p>Sair da Conta</p>
                     </div>
                 </div>
+                {% if eh_admin %}
+                </div>
+                {% endif %}
             </div>
         </div>
+        <section class="grafico-dashboard">
+            <h2>Receitas e despesas dos últimos 6 meses</h2>
+            <img src="{{ svg }}" alt="Gráfico de receitas e despesas dos últimos seis meses">
+        </section>
     </main>
 
-    <!-- POP-UP DE CONFIRMAÇÃO DE SAÍDA -->
-    <div
-        class="fundo-modal"
-        id="modalSair"
-        style="display: none;"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="tituloModalSair"
-    >
-
+    <div class="fundo-modal" id="modalSair" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="tituloModalSair">
         <div class="modal">
-
-            <!-- ÍCONE -->
-            <div class="icone-sair">
-
-                <img
-                    src="{{ url_for('static', filename='uploads/sair.png') }}"
-                    alt="Ícone de sair"
-                >
-
-            </div>
-
-
-            <!-- MENSAGEM -->
-            <h2 id="tituloModalSair">
-                Deseja sair de sua conta?
-            </h2>
-
+            <div class="icone-sair"><img src="{{ url_for('static', filename='uploads/icone-sair.png') }}" alt="Ícone de sair"></div>
+            <h2 id="tituloModalSair">Deseja realmente sair?</h2>
             <p>Suas informações serão mantidas.</p>
-
-
-            <!-- BOTÕES -->
             <div class="botoes-modal">
-
-                <!-- CONFIRMAR SAÍDA -->
-                <button
-                    type="button"
-                    class="botao-sair"
-                    onclick="sairDaConta()"
-                >
-                    Sair
-                </button>
-
-                <!-- CANCELAR SAÍDA -->
-                <button
-                    type="button"
-                    class="botao-cancelar"
-                    onclick="fecharModal()"
-                >
-                    Cancelar
-                </button>
-
+                <button type="button" class="botao-sair" onclick="sairDaConta()">Sair</button>
+                <button type="button" class="botao-cancelar" onclick="fecharModal()">Cancelar</button>
             </div>
-
         </div>
-
     </div>
-
 
     <!-- JAVASCRIPT -->
     <script>
 
-        // Abre o pop-up de confirmação
-        function abrirModal() {
-            const modal = document.getElementById("modalSair");
-
-            modal.style.display = "flex";
+        function alternarMenuPerfil() {
+            const menu = document.getElementById("menuPerfilHeader");
+            const dados = document.querySelector(".dados-usuario");
+            const aberto = menu.classList.toggle("menu-aberto");
+            dados.classList.toggle("menu-aberto", aberto);
+            document.querySelectorAll(".botao-perfil-header, .seta-perfil-header").forEach(function(botao) {
+                botao.setAttribute("aria-expanded", aberto ? "true" : "false");
+            });
         }
 
-
-        // Fecha o pop-up
-        function fecharModal() {
-            const modal = document.getElementById("modalSair");
-
-            modal.style.display = "none";
-        }
-
-
-        // Fecha o pop-up ao clicar fora da caixa
-        document.getElementById("modalSair").addEventListener("click", function(event) {
-            if (event.target === this) {
-                fecharModal();
-            }
-        });
-
-
-        // Fecha o pop-up ao pressionar a tecla Escape
-        document.addEventListener("keydown", function(event) {
-            if (event.key === "Escape") {
-                fecharModal();
-            }
-        });
-
-
-        // Confirma a saída e chama a rota de logout do Flask
-        function sairDaConta() {
-            window.location.assign("{{ url_for('logout') }}");
-        }
+        function abrirModal() { document.getElementById("modalSair").style.display = "flex"; }
+        function fecharModal() { document.getElementById("modalSair").style.display = "none"; }
+        function sairDaConta() { window.location.assign("{{ url_for('logout') }}"); }
+        document.getElementById("modalSair").addEventListener("click", function(event) { if (event.target === this) fecharModal(); });
+        document.addEventListener("keydown", function(event) { if (event.key === "Escape") fecharModal(); });
 
     </script>
 
+<script>
+        document.querySelectorAll(".card h2, .card-parcela h2").forEach(function(texto) {
+            if (texto.textContent.length > 18) {
+                texto.style.fontSize = "14px";
+            } else if (texto.textContent.length > 13) {
+                texto.style.fontSize = "17px";
+            }
+        });
+</script>
 </body>
 
 </html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Usuários | CredMais</title>
+    <link rel="icon" href="{{ url_for('static', filename='uploads/LogoSoloCrediMais.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_movimentacoes.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/gerenciar_usuarios.css') }}">
+    <script src="{{ url_for('static', filename='js/header.js') }}" defer></script>
+</head>
+<body>
+{% set pagina_ativa = 'usuarios' %}
+<header class="cabecalho-padrao">
+    <a href="{{ url_for('dashboard') }}" class="cabecalho-logo">
+        <img src="{{ url_for('static', filename='uploads/LogoSoloCrediMais.png') }}" alt="Logo CredMais" class="cabecalho-simbolo">
+        <span class="cabecalho-texto"><span class="cabecalho-nome"><span class="nome-azul">Cred</span><span class="nome-verde">Mais</span></span><span class="cabecalho-slogan">Gestão de crédito para<br>pequenos negócios</span></span>
+    </a>
+    <nav class="cabecalho-menu">
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        {% if eh_admin %}<a href="{{ url_for('listar_taxas') }}">Taxas</a>{% endif %}
+        <a href="{{ url_for('simulacao') }}">Simulação</a>
+        <a href="{{ url_for('historico_emprestimos') }}">Empréstimos</a>
+        <a href="{{ url_for('movimentacoes') }}">Movimentações</a>
+        <a href="{{ url_for('gerenciar_usuarios') }}" class="ativo">Gerenciar Usuários</a>
+    </nav>
+    <div class="cabecalho-usuario">
+        <button type="button" class="botao-perfil-header" onclick="alternarMenuPerfil()" aria-label="Abrir opções do perfil"><img class="foto-perfil-header" src="{{ url_for('static', filename='uploads/' ~ (session.get('usuario_foto') or 'perfil-padrao.png')) }}" onerror="this.onerror=null;this.src='{{ url_for('static', filename='uploads/perfil-padrao.png') }}'" alt="Foto de perfil"></button>
+        <div class="dados-usuario"><span class="nome-usuario-header">{{ session.get('usuario_nome', '') }}</span><span class="email-usuario-header">{{ session.get('usuario_email', '') }}</span>
+            <button type="button" class="seta-perfil-header" onclick="alternarMenuPerfil()" aria-label="Mostrar opções do perfil"><img src="{{ url_for('static', filename='uploads/seta_indicadora.png') }}" alt=""></button>
+            <div class="menu-perfil-header" id="menuPerfilHeader"><a href="{{ url_for('perfil') }}" class="botao-editar-perfil">Editar perfil</a><button type="button" class="botao-sair-header" onclick="abrirModal()">Sair</button></div>
+        </div>
+    </div>
+</header>
+<main class="conteudo conteudo-usuarios">
+    <h1 class="titulo-usuarios">Gerenciar Usuários</h1>
+    {% with mensagens = get_flashed_messages(with_categories=true) %}{% for categoria_msg, mensagem in mensagens %}<div class="mensagem {{ categoria_msg }}">{{ mensagem }}</div>{% endfor %}{% endwith %}
+    <section class="resumos resumos-usuarios">
+        <article class="cartao-resumo"><div class="iconeg"><img src="{{ url_for('static', filename='uploads/usuarios_cadastrados.png') }}" alt=""></div><h2>Usuários Cadastrados</h2><div class="resumo-valor"><strong>{{ total_usuarios }}</strong></div></article>
+        <article class="cartao-resumo"><div class="iconeg"><img src="{{ url_for('static', filename='uploads/escudo_perfis.png') }}" alt=""></div><h2>Perfis Ativos</h2><div class="resumo-valor"><strong>{{ perfis_ativos }}</strong></div></article>
+        <article class="cartao-resumo"><div class="iconeg"><img src="{{ url_for('static', filename='uploads/relogio_perfis.png') }}" alt=""></div><h2>Perfis Bloqueados</h2><div class="resumo-valor"><strong>{{ perfis_bloqueados }}</strong></div></article>
+    </section>
+    <section class="tabela-container tabela-usuarios"><table><thead><tr><th>Nome</th><th>E-mail</th><th>Tipo de perfil</th><th>Status</th></tr></thead><tbody>
+    {% for usuario in usuarios %}
+    <tr class="linha-usuario" data-url="{{ url_for('editar_usuario_admin', id_usuario=usuario[0]) }}" tabindex="0">
+        <td class="descricao">{{ usuario[1] }}</td><td>{{ usuario[2] }}</td><td>{{ 'Administrador' if usuario[3] == 2 else 'Usuário' }}</td>
+        <td>{% if usuario[5] %}<span class="status-usuario bloqueado">Bloqueado</span>{% elif usuario[4] %}<span class="status-usuario ativo">Ativo</span>{% else %}<span class="status-usuario inativo">Inativo</span>{% endif %}</td>
+    </tr>
+    {% else %}<tr><td colspan="4">Nenhum usuário cadastrado.</td></tr>{% endfor %}
+    </tbody></table></section>
+</main>
+<div class="fundo-modal" id="modalSair" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="tituloModalSair">
+    <div class="modal">
+        <div class="icone-sair"><img src="{{ url_for('static', filename='uploads/icone-sair.png') }}" alt="Ícone de sair"></div>
+        <h2 id="tituloModalSair">Deseja realmente sair?</h2>
+        <p>Suas informações serão mantidas.</p>
+        <div class="botoes-modal">
+            <button type="button" class="botao-sair" onclick="sairDaConta()">Sair</button>
+            <button type="button" class="botao-cancelar" onclick="fecharModal()">Cancelar</button>
+        </div>
+    </div>
+</div>
+<script>
+document.querySelectorAll('.linha-usuario').forEach(function(linha) {
+    linha.addEventListener('click', function() { window.location.href = linha.dataset.url; });
+    linha.addEventListener('keydown', function(evento) { if (evento.key === 'Enter') window.location.href = linha.dataset.url; });
+});
+function alternarMenuPerfil() { var menu = document.getElementById('menuPerfilHeader'); if (menu) menu.classList.toggle('menu-aberto'); }
+function abrirModal() { document.getElementById("modalSair").style.display = "flex"; }
+function fecharModal() { document.getElementById("modalSair").style.display = "none"; }
+function sairDaConta() { window.location.assign("{{ url_for('logout') }}"); }
+document.getElementById("modalSair").addEventListener("click", function(event) { if (event.target === this) fecharModal(); });
+document.addEventListener("keydown", function(event) { if (event.key === "Escape") fecharModal(); });
+</script>
+</body>
+</html>
