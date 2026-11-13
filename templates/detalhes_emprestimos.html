@@ -6,54 +6,52 @@
     <title>Detalhes do Empréstimo | CredMais</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/detalhes_emprestimos.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
-    <link rel="icon" type="image/png" href="../static/uploads/LogoSoloCrediMais.png">    <script src="{{ url_for('static', filename='js/header.js') }}" defer></script>
+    <link rel="icon" type="image/png" href="../static/uploads/LogoSoloCrediMais.png">
+    <script src="{{ url_for('static', filename='js/header.js') }}" defer></script>
 </head>
 <body>
 
     {% set pagina_ativa = 'emprestimos' %}
-<header class="cabecalho-padrao">
-    <a href="{{ url_for('dashboard') }}" class="cabecalho-logo">
-        <img src="{{ url_for('static', filename='uploads/LogoSoloCrediMais.png') }}" alt="Logo CredMais" class="cabecalho-simbolo">
-        <span class="cabecalho-texto">
-            <span class="cabecalho-nome"><span class="nome-azul">Cred</span><span class="nome-verde">Mais</span></span>
-            <span class="cabecalho-slogan">Gestão de crédito para<br>pequenos negócios</span>
-        </span>
-    </a>
-    <nav class="cabecalho-menu">
-        <a href="{{ url_for('dashboard') }}" class="{% if pagina_ativa == 'dashboard' %}ativo{% endif %}">Dashboard</a>
-        {% if eh_admin %}<a href="{{ url_for('listar_taxas') }}" class="{% if pagina_ativa == 'taxas' %}ativo{% endif %}">Taxas</a>{% endif %}
-        <a href="{{ url_for('simulacao') }}" class="{% if pagina_ativa == 'simulacao' %}ativo{% endif %}">Simulação</a>
-        <a href="{{ url_for('historico_emprestimos') }}" class="{% if pagina_ativa == 'emprestimos' %}ativo{% endif %}">Empréstimos</a>
-        <a href="{{ url_for('movimentacoes') }}" class="{% if pagina_ativa == 'movimentacoes' %}ativo{% endif %}">Movimentações</a>
-    </nav>
-    {% if session.get('usuario_id') %}
-    <div class="cabecalho-usuario">
-        <button type="button" class="botao-perfil-header" onclick="alternarMenuPerfil()" aria-label="Abrir opções do perfil" aria-expanded="false">
-            <img class="foto-perfil-header" src="{{ url_for('static', filename='uploads/' ~ (session.get('usuario_foto') or 'perfil-padrao.png')) }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='uploads/perfil-padrao.png') }}'" alt="Foto de perfil">
-        </button>
-        <div class="dados-usuario">
-            <span class="nome-usuario-header">{{ session.get('usuario_nome', '') }}</span>
-            <span class="email-usuario-header">{{ session.get('usuario_email', '') }}</span>
-            <button type="button" class="seta-perfil-header" onclick="alternarMenuPerfil()" aria-label="Mostrar opções do perfil" aria-expanded="false">
-                <img src="{{ url_for('static', filename='uploads/seta_indicadora.png') }}" alt="">
+    <header class="cabecalho-padrao">
+        <a href="{{ url_for('dashboard') }}" class="cabecalho-logo">
+            <img src="{{ url_for('static', filename='uploads/LogoSoloCrediMais.png') }}" alt="Logo CredMais" class="cabecalho-simbolo">
+            <span class="cabecalho-texto">
+                <span class="cabecalho-nome"><span class="nome-azul">Cred</span><span class="nome-verde">Mais</span></span>
+                <span class="cabecalho-slogan">Gestão de crédito para<br>pequenos negócios</span>
+            </span>
+        </a>
+        <nav class="cabecalho-menu">
+            <a href="{{ url_for('dashboard') }}" class="{% if pagina_ativa == 'dashboard' %}ativo{% endif %}">Dashboard</a>
+            {% if eh_admin %}<a href="{{ url_for('listar_taxas') }}" class="{% if pagina_ativa == 'taxas' %}ativo{% endif %}">Taxas</a>{% endif %}
+            <a href="{{ url_for('simulacao') }}" class="{% if pagina_ativa == 'simulacao' %}ativo{% endif %}">Simulação</a>
+            <a href="{{ url_for('historico_emprestimos') }}" class="{% if pagina_ativa == 'emprestimos' %}ativo{% endif %}">Empréstimos</a>
+            <a href="{{ url_for('movimentacoes') }}" class="{% if pagina_ativa == 'movimentacoes' %}ativo{% endif %}">Movimentações</a>
+        </nav>
+        {% if session.get('usuario_id') %}
+        <div class="cabecalho-usuario">
+            <button type="button" class="botao-perfil-header" onclick="alternarMenuPerfil()" aria-label="Abrir opções do perfil" aria-expanded="false">
+                <img class="foto-perfil-header" src="{{ url_for('static', filename='uploads/' ~ (session.get('usuario_foto') or 'perfil-padrao.png')) }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='uploads/perfil-padrao.png') }}'" alt="Foto de perfil">
             </button>
-            <div class="menu-perfil-header" id="menuPerfilHeader">
-                <a href="{{ url_for('perfil') }}" class="botao-editar-perfil">Editar perfil</a>
-                <button type="button" class="botao-sair-header" onclick="abrirModal()">Sair</button>
+            <div class="dados-usuario">
+                <span class="nome-usuario-header">{{ session.get('usuario_nome', '') }}</span>
+                <span class="email-usuario-header">{{ session.get('usuario_email', '') }}</span>
+                <button type="button" class="seta-perfil-header" onclick="alternarMenuPerfil()" aria-label="Mostrar opções do perfil" aria-expanded="false">
+                    <img src="{{ url_for('static', filename='uploads/seta_indicadora.png') }}" alt="">
+                </button>
+                <div class="menu-perfil-header" id="menuPerfilHeader">
+                    <a href="{{ url_for('perfil') }}" class="botao-editar-perfil">Editar perfil</a>
+                    <button type="button" class="botao-sair-header" onclick="abrirModal()">Sair</button>
+                </div>
             </div>
         </div>
-    </div>
-    {% endif %}
-</header>
+        {% endif %}
+    </header>
 
     <main class="pagina">
 
         <section class="cabecalho-pagina">
             <img
-                src="{{ url_for('static', filename='uploads/icone-detalhes.png') }}"
-                alt=""
-                class="icone-cabecalho"
-            >
+                src="{{ url_for('static', filename='uploads/icone-detalhes.png') }}" alt="" class="icone-cabecalho">
 
             <div>
                 <h1>Detalhes do Empréstimo</h1>
@@ -140,6 +138,12 @@
                     <h2>Lista de parcelas</h2>
                 </div>
 
+                {% if emprestimo and emprestimo.id %}
+                <div class="area-pdf">
+                    <a href="{{ url_for('pdf_emprestimo', id_emprestimo=emprestimo.id) }}" class="botao-pdf">Gerar relatório do empréstimo</a>
+                </div>
+                {% endif %}
+
                 <div class="tabela-responsiva">
                     <table>
                         <thead>
@@ -169,7 +173,7 @@
                                     </td>
                                     <td>{{ taxa_atual if parcela.status != 'Pago' else parcela.taxa }}%</td>
                                     <td>
-                                        {% if parcela.id is defined and parcela.id  %}
+                                        {% if parcela.id is defined and parcela.id %}
                                         <form method="POST" action="{{ url_for('pagar_parcela', id_parcela=parcela.id) }}">
                                             <button type="submit" class="botao-pagar">Pagar</button>
                                         </form>
@@ -202,52 +206,59 @@
 
     </main>
 
-<div class="fundo-modal" id="modalExcluir" style="display:none;" role="dialog" aria-modal="true">
-    <div class="modal">
-        <h2>Excluir empréstimo?</h2>
-        <p>O empréstimo e todas as parcelas serão apagados.</p>
-        <div class="botoes-modal">
-            <form method="POST" action="{% if emprestimo and emprestimo.id %}{{ url_for('excluir_emprestimo', id_emprestimo=emprestimo.id) }}{% endif %}">
-                <button type="submit" class="botao-sair">Excluir</button>
-            </form>
-            <button type="button" class="botao-cancelar" onclick="fecharModalExcluir()">Cancelar</button>
+    <div class="fundo-modal" id="modalExcluir" style="display:none;" role="dialog" aria-modal="true">
+        <div class="modal">
+            <h2>Excluir empréstimo?</h2>
+            <p>O empréstimo e todas as parcelas serão apagados.</p>
+            <div class="botoes-modal">
+                <form method="POST" action="{% if emprestimo and emprestimo.id %}{{ url_for('excluir_emprestimo', id_emprestimo=emprestimo.id) }}{% endif %}">
+                    <button type="submit" class="botao-sair">Excluir</button>
+                </form>
+                <button type="button" class="botao-cancelar" onclick="fecharModalExcluir()">Cancelar</button>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="fundo-modal" id="modalSair" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="tituloModalSair">
-    <div class="modal">
-        <div class="icone-sair"><img src="{{ url_for('static', filename='uploads/icone-sair.png') }}" alt="Ícone de sair"></div>
-        <h2 id="tituloModalSair">Deseja realmente sair?</h2>
-        <p>Suas informações serão mantidas.</p>
-        <div class="botoes-modal"><button type="button" class="botao-sair" onclick="sairDaConta()">Sair</button><button type="button" class="botao-cancelar" onclick="fecharModal()">Cancelar</button></div>
+    <div class="fundo-modal" id="modalSair" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="tituloModalSair">
+        <div class="modal">
+            <div class="icone-sair"><img src="{{ url_for('static', filename='uploads/icone-sair.png') }}" alt="Ícone de sair"></div>
+            <h2 id="tituloModalSair">Deseja realmente sair?</h2>
+            <p>Suas informações serão mantidas.</p>
+            <div class="botoes-modal">
+                <button type="button" class="botao-sair" onclick="sairDaConta()">Sair</button>
+                <button type="button" class="botao-cancelar" onclick="fecharModal()">Cancelar</button>
+            </div>
+        </div>
     </div>
-</div>
-<script>
-function alternarMenuPerfil() {
-    const menu = document.getElementById("menuPerfilHeader");
-    const dados = document.querySelector(".dados-usuario");
-    const aberto = menu.classList.toggle("menu-aberto");
-    dados.classList.toggle("menu-aberto", aberto);
-    document.querySelectorAll(".botao-perfil-header, .seta-perfil-header").forEach(function(botao) {
-        botao.setAttribute("aria-expanded", aberto ? "true" : "false");
-    });
-}
-function abrirModal() { document.getElementById("modalSair").style.display = "flex"; }
-function fecharModal() { document.getElementById("modalSair").style.display = "none"; }
-function abrirModalExcluir() { document.getElementById("modalExcluir").style.display = "flex"; }
-function fecharModalExcluir() { document.getElementById("modalExcluir").style.display = "none"; }
-function sairDaConta() { window.location.assign("{{ url_for('logout') }}"); }
-document.getElementById("modalSair").addEventListener("click", function(event) { if (event.target === this) fecharModal(); });
-document.addEventListener("keydown", function(event) { if (event.key === "Escape") fecharModal(); });
-</script>
+
+    <script>
+        function alternarMenuPerfil() {
+            const menu = document.getElementById("menuPerfilHeader");
+            const dados = document.querySelector(".dados-usuario");
+            const aberto = menu.classList.toggle("menu-aberto");
+            dados.classList.toggle("menu-aberto", aberto);
+            document.querySelectorAll(".botao-perfil-header, .seta-perfil-header").forEach(function(botao) {
+                botao.setAttribute("aria-expanded", aberto ? "true" : "false");
+            });
+        }
+        function abrirModal() { document.getElementById("modalSair").style.display = "flex"; }
+        function fecharModal() { document.getElementById("modalSair").style.display = "none"; }
+        function abrirModalExcluir() { document.getElementById("modalExcluir").style.display = "flex"; }
+        function fecharModalExcluir() { document.getElementById("modalExcluir").style.display = "none"; }
+        function sairDaConta() { window.location.assign("{{ url_for('logout') }}"); }
+        document.getElementById("modalSair").addEventListener("click", function(event) { if (event.target === this) fecharModal(); });
+        document.addEventListener("keydown", function(event) { if (event.key === "Escape") fecharModal(); });
+    </script>
+
+    <style>
+        .status-parcela.pago { color: #168447; background: #e1f6e9; padding: 5px 10px; border-radius: 6px; }
+        .area-excluir { margin-top: 20px; text-align: right; }
+        .botao-excluir { border: 0; border-radius: 6px; padding: 9px 16px; background: #e74b4b; color: white; cursor: pointer; }
+        .botao-pagar { border: 0; border-radius: 6px; padding: 7px 13px; background: #1A67F5; color: white; cursor: pointer; }
+        .area-pdf { margin: 0 0 14px; text-align: right; }
+        .botao-pdf { display: inline-block; border: 0; border-radius: 6px; padding: 9px 16px; background: #1A67F5; color: white; font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer; }
+        .botao-pdf:hover { background: #1456D3; }
+    </style>
 
 </body>
 </html>
-
-<style>
-.status-parcela.pago { color:#168447; background:#e1f6e9; padding:5px 10px; border-radius:6px; }
-.area-excluir { margin-top:20px; text-align:right; }
-.botao-excluir { border:0; border-radius:6px; padding:9px 16px; background:#e74b4b; color:white; cursor:pointer; }
-.botao-pagar { border:0; border-radius:6px; padding:7px 13px; background:#1A67F5; color:white; cursor:pointer; }
-</style>
