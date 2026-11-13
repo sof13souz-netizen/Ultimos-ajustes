@@ -205,6 +205,9 @@ button {
     transition: transform 0.2s;
 }
 
+/* seta gira. O seletor só vale quando o .dados-usuario tem a classe
+   "menu-aberto", e o JavaScript liga essa classe ao clicar. Nesse caso a imagem
+   da seta é girada 180 graus (de cabeça para baixo). */
 .dados-usuario.menu-aberto .seta-perfil-header img {
     transform: rotate(180deg);
 }
