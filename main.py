@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-# ============================================================
-# CREDMAIS - SISTEMA WEB DE CONTROLE FINANCEIRO E EMPRÉSTIMOS (Flask + Firebird)
-# ============================================================
 from flask import (Flask, render_template, redirect, request, flash, url_for, session, send_from_directory, send_file,jsonify)
 #aplicação web, abrir página do html e envia informações do python pra elas, redirecionar usuário, receber dados, mensagens temporárias, gera endereço de uma rota, armazena info dos usuários,
 #envia arquivo de uma pasta específica, envia arquivo ao navegador como o pdf, transf dados do python em resposta formato json
@@ -16,6 +12,8 @@ from fpdf import FPDF  #documento pdf
 from werkzeug.security import generate_password_hash, check_password_hash  #transf senha em hash para armazenar, verifica se a senha corresponde ao hash
 from uuid import uuid4  #evitar nomes repetidos e identificar arquivos
 
+# Flask(__name__) cria o objeto principal do site. O __name__ diz ao Flask onde está este arquivo,
+# e é a partir dessa pasta que ele encontra as pastas "templates" (HTML) e "static" (imagens, css, js).
 app = Flask(__name__)  # cria a aplicação Flask
 app.config["SECRET_KEY"] = "1234"  # chave usada para assinar a sessão (cookie) e as mensagens flash; em produção deve ser longa e secreta
 
@@ -28,6 +26,9 @@ password = "sysdba"  # senha do usuário
 
 def conectar_banco():   #para conactar o banco
     # abre e devolve uma nova conexão com o Firebird; quem chama precisa fechar (close)
+    # fdb.connect abre a conexão com o Firebird usando os dados definidos lá em cima
+    # (servidor, caminho do arquivo .FDB, usuário e senha). Se o banco estiver desligado ou o caminho
+    # estiver errado, essa linha gera um erro - por isso toda rota que chama conectar_banco() usa try/except.
     return fdb.connect(
         host=host,
         database=database,
@@ -40,6 +41,9 @@ def validar_senha(senha):
     # regra de senha forte: retorna True só se cumprir todos os requisitos
     if len(senha) < 8:  # mínimo de 8 caracteres
         return False
+    # any(... for c in senha) percorre a senha caractere por caractere e devolve True assim que
+    # encontrar UM caractere que atenda à condição (isupper = maiúscula, islower = minúscula,
+    # isdigit = número). A linha do símbolo usa "not c.isalnum()": se não é letra nem número, é símbolo.
     tem_maiuscula = any(c.isupper() for c in senha)  # pelo menos 1 letra maiúscula
     tem_minuscula = any(c.islower() for c in senha)  # pelo menos 1 minúscula
     tem_numero = any(c.isdigit() for c in senha)  # pelo menos 1 número
@@ -52,6 +56,9 @@ def validar_senha(senha):
 TIPO_ADMIN = 2  # valor da coluna TIPO que identifica um administrador (1 = usuário comum)
 
 
+# Esta função roda automaticamente antes de renderizar QUALQUER template.
+# O dicionário que ela devolve vira variável global nos HTMLs, então todo template pode
+# usar {{ eh_admin }} sem precisar que cada rota envie essa informação.
 @app.context_processor
 def dados_do_header():
     # context_processor: injeta a variável "eh_admin" automaticamente em TODOS os templates (ex.: para mostrar menu de admin)
@@ -67,6 +74,8 @@ def dados_do_header():
 # INÍCIO
 # ============================================================
 
+# @app.route liga um endereço (URL) a uma função: quando o navegador acessa "/", o Flask executa inicio().
+# Sem o parâmetro methods, a rota só aceita GET (abrir a página). Quem recebe formulário usa methods=["GET","POST"].
 @app.route("/")
 def inicio():
     # página inicial pública
@@ -74,6 +83,9 @@ def inicio():
 @app.route("/logo")
 def logo():
     # entrega a imagem da logo guardada em static/uploads
+    # app.root_path = pasta onde está o app.py. os.path.join monta o caminho com a barra correta do sistema
+    # (\\ no Windows, / no Linux). send_from_directory entrega o arquivo de forma segura ao navegador,
+    # impedindo que alguém acesse arquivos fora dessa pasta.
     return send_from_directory(os.path.join(app.root_path, "static", "uploads"),"logo.png")
 @app.route("/fundo")
 def fundo():
@@ -89,13 +101,20 @@ def fundo():
 def cadastro():
     # GET: mostra o formulário | POST: valida os dados e cria o usuário
     if request.method == "POST":
+        # request.form guarda os campos enviados pelo formulário HTML (método POST).
+        # .get("nome", "") busca o campo pelo atributo name="nome" do input; se ele não existir, devolve "" (vazio)
+        # em vez de dar erro. .strip() remove espaços no começo e no fim do texto digitado.
         nome = request.form.get("nome", "").strip()  # strip tira espaços das pontas
         email = request.form.get("email", "").strip().lower()  # e-mail sempre em minúsculo para evitar duplicidade
         senha = request.form.get("senha", "")
         confirmar_senha = request.form.get("confirmar_senha", "")
 
         # nenhum campo pode ficar vazio
+        # "not nome" é True quando o texto está vazio (string vazia conta como falso no Python).
+        # O "or" faz o if entrar se QUALQUER um dos campos estiver vazio.
         if not nome or not email or not senha or not confirmar_senha:
+            # flash guarda uma mensagem temporária que o template exibe uma vez (usando get_flashed_messages).
+            # Sem segundo argumento ela fica sem categoria; com "erro" ou "sucesso" o HTML escolhe a cor.
             flash("Preencha todos os campos.")
             return render_template("cadastro_usuario.html")
 
@@ -118,17 +137,26 @@ def cadastro():
         conexao = None  # começam como None para o finally saber se precisam ser fechados
         cursor = None
 
+        # try/except/finally: o Python tenta executar o bloco do try; se QUALQUER erro acontecer (banco fora do ar,
+        # falha de SQL...), pula para o except em vez de derrubar o site com tela de erro. O finally roda sempre.
         try:   #tratamento de erro
             conexao = conectar_banco()
             cursor = conexao.cursor()
 
             # verifica se o e-mail já existe (? evita SQL injection)
+            # O cursor é quem executa comandos SQL. O "?" é um parâmetro: o valor vem separado, na tupla (email,).
+            # A vírgula depois de email é obrigatória - sem ela o Python não entende como tupla de 1 item.
+            # Isso protege contra SQL Injection (alguém digitar comandos SQL no campo de e-mail).
             cursor.execute( "SELECT ID_USUARIO FROM USUARIO WHERE EMAIL = ?", (email,))
 
+            # fetchone() devolve a PRIMEIRA linha do resultado ou None se a consulta não achou nada.
+            # Se achou uma linha (valor "verdadeiro"), o e-mail já existe.
             if cursor.fetchone():  # achou alguém com esse e-mail
                 flash("Este e-mail já está cadastrado.")
                 return render_template("cadastro_usuario.html")
 
+            # generate_password_hash transforma a senha em um código irreversível (hash com "sal" aleatório).
+            # Assim, mesmo que o banco vaze, ninguém lê a senha real. Para conferir no login usa-se check_password_hash.
             senha_criptografada = generate_password_hash(senha)  # nunca guarda a senha pura, só o hash
 
             # cria o usuário: tipo 1 (comum), ativo, 0 tentativas de login, não bloqueado
@@ -147,6 +175,8 @@ def cadastro():
             usuario = cursor.fetchone()
 
             if not usuario:
+                # raise cria um erro de propósito. Esse caso "não deveria acontecer" (acabamos de inserir o usuário),
+                # mas se acontecer o except abaixo desfaz tudo com rollback.
                 raise Exception("Usuário não foi encontrado após o cadastro.")
 
             id_usuario = usuario[0]
@@ -163,12 +193,16 @@ def cadastro():
             conexao.commit()  # só confirma se tudo deu certo (transação)
 
             flash("Cadastro realizado com sucesso!", "sucesso")
+            # url_for("login") recebe o NOME DA FUNÇÃO (def login) e devolve a URL dela ("/login").
+            # Assim, se a URL mudar um dia, só o @app.route precisa ser alterado. redirect manda o navegador para lá.
             return redirect(url_for("login"))
 
         except Exception:
             if conexao:
                 conexao.rollback()  # desfaz tudo se algo falhou
 
+            # logger.exception grava no terminal o erro completo (com o traceback), útil para o programador depurar,
+            # enquanto o usuário vê apenas uma mensagem simples pelo flash.
             app.logger.exception("Erro ao salvar cadastro.")  # registra o erro completo no console
             flash("Erro ao salvar o cadastro.")
             return render_template("cadastro_usuario.html")
@@ -229,11 +263,14 @@ def login():
             senha_banco = usuario[3]
             tipo_usuario = usuario[4]
             ativo = usuario[5]
+            # "usuario[6] or 0": se a coluna vier vazia (None), usa 0. Depois int() garante que seja número inteiro.
             tentativas_login = int(usuario[6] or 0)  # None vira 0
             bloqueado = usuario[7]
             foto_perfil = usuario[8] or ""
 
             # conta desativada não entra
+            # O banco pode devolver o campo booleano como False ou como 0 dependendo do driver;
+            # conferimos as duas formas para não deixar passar uma conta inativa.
             if ativo is False or ativo == 0:
                 flash("Sua conta está inativa. Não é possível realizar o login.")
                 return render_template("login.html")
@@ -248,6 +285,8 @@ def login():
                 return render_template("login.html")
 
             # senha errada: soma tentativa e bloqueia ao chegar em 3
+            # check_password_hash(hash_do_banco, senha_digitada) refaz o cálculo e devolve True se baterem.
+            # Aqui o "not" faz o bloco rodar quando a senha está ERRADA.
             if not check_password_hash(senha_banco, senha):
                 tentativas_login += 1
 
@@ -298,6 +337,8 @@ def login():
 
             # cria a sessão do usuário logado (limpa qualquer sessão antiga antes)
             session.clear()
+            # session é um dicionário guardado em um cookie ASSINADO com a SECRET_KEY: o usuário não consegue alterar
+            # seus valores sem invalidar a assinatura. É por ele que o sistema sabe quem está logado nas próximas páginas.
             session["usuario_id"] = id_usuario
             session["usuario_nome"] = nome_usuario
             session["usuario_email"] = email_usuario
@@ -460,6 +501,7 @@ def perfil():
     senha_atual = request.form.get("senha_atual", "")
     nova_senha = request.form.get("nova_senha", "")
 
+    # Arquivos enviados pelo formulário (input type="file") ficam em request.files, não em request.form.
     foto = request.files.get("foto")  # arquivo enviado (pode vir vazio)
     nome_foto = None  # só recebe valor se uma foto válida for enviada
 
@@ -511,6 +553,8 @@ def perfil():
                 return redirect(url_for("perfil"))
 
             # nem igual a alguma das 3 últimas do histórico
+            # Compara a nova senha com cada hash do histórico. Não dá para comparar texto com texto porque
+            # o hash é diferente a cada geração; por isso se usa check_password_hash em cada um.
             for senha_antiga in senhas_anteriores:
                 if check_password_hash(senha_antiga, nova_senha):
                     flash("Não é permitido reutilizar as três últimas senhas.", "erro")
@@ -525,6 +569,8 @@ def perfil():
                 flash("Escolha uma imagem JPG, JPEG, PNG ou WEBP.", "erro")
                 return redirect(url_for("perfil"))
 
+            # f-string: o que está entre {} é substituído pelo valor da variável. uuid4().hex gera um código aleatório
+            # único (ex.: 9f1c2a...), então o nome final fica algo como perfil_3_9f1c2a....png e nunca se repete.
             nome_foto = f'perfil_{id_usuario}_{uuid4().hex}{extensao}'  #criar um nome específico para não ter iguais
             pasta_uploads = os.path.join(app.root_path, "static", "uploads")
             os.makedirs(pasta_uploads, exist_ok=True)  #criar pasta caso ela não exista
@@ -538,7 +584,7 @@ def perfil():
 
             try:
                 # se a senha mudou, guarda a senha ANTIGA no histórico
-                if novo_hash is not None: 
+                if novo_hash is not None:
                     cursor.execute(
                         """
                         INSERT INTO HISTORICO_SENHA (SENHA, ID_USUARIO, DATA_ALTERACAO)
@@ -731,6 +777,8 @@ def id_usuario_movimentacao():
 
 
 def formatar_reais(valor):   #formatar os valores de dinheiro
+    # Formato ":,.2f" = separador de milhar (,) + 2 casas decimais (.2f). float() garante que seja número.
+    # O resultado vem no padrão americano (1,234.50); as 3 linhas seguintes trocam para o brasileiro.
     texto = f"{float(valor):,.2f}"   # 1234.5 -> "1,234.50" (padrão americano)
     texto = texto.replace(",", "X")  # troca a vírgula por marcador temporário
     texto = texto.replace(".", ",")  # ponto decimal vira vírgula
@@ -773,6 +821,8 @@ def montar_movimentacao(linha):
 
     return {
         "id": linha[0],
+        # strftime formata a data como texto: %d = dia, %m = mês, %Y = ano com 4 dígitos.
+        # "data" mostra só dia/mês na lista; "data_completa" mostra dia/mês/ano.
         "data": linha[1].strftime("%d/%m"),
         "data_completa": linha[1].strftime("%d/%m/%Y"),
         "descricao": descricao,
@@ -808,6 +858,8 @@ def buscar_movimentacoes(data_inicio, data_fim):
                 (id_usuario_movimentacao(), data_inicio, data_fim)
             )
 
+            # List comprehension: cria uma lista nova aplicando montar_movimentacao a cada linha do resultado.
+            # É o mesmo que fazer um for com append, só que em uma linha.
             return [montar_movimentacao(linha)for linha in cursor.fetchall()]
         finally:
             cursor.close()
@@ -860,6 +912,8 @@ def somar(tipo, data_inicio=date(2000, 1, 1)):
                 (id_usuario_movimentacao(), tipo, data_inicio)
             )
 
+            # fetchall() devolve todas as linhas. Para cada linha pega a coluna 0 (VALOR), converte em float e
+            # sum() soma tudo. Se não houver linhas, a soma é 0.
             return sum(float(linha[0]) for linha in cursor.fetchall())
 
         finally:
@@ -870,6 +924,7 @@ def somar(tipo, data_inicio=date(2000, 1, 1)):
 
 def somar_mes(tipo):   #calcular o período do mês atual
     hoje = date.today()   #obtem a data do pc e armazena na variável hoje
+    # replace(day=1) cria uma cópia da data de hoje trocando só o dia para 1 (primeiro dia do mês atual).
     inicio = hoje.replace(day=1)   #identificar o começo do período que será consultado
 
     if hoje.month == 12:
@@ -896,6 +951,8 @@ def somar_mes(tipo):   #calcular o período do mês atual
                 (id_usuario_movimentacao(), tipo, inicio, fim)
             )
 
+            # fetchall() devolve todas as linhas. Para cada linha pega a coluna 0 (VALOR), converte em float e
+            # sum() soma tudo. Se não houver linhas, a soma é 0.
             return sum(float(linha[0]) for linha in cursor.fetchall())
 
         finally:
@@ -919,6 +976,7 @@ def movimentacoes():
     data_inicio, data_fim = datas_do_periodo(periodo)
     dados = buscar_movimentacoes(data_inicio, data_fim)
 
+    # Saldo = tudo que entrou - tudo que saiu (desde o ano 2000, ou seja, todo o histórico).
     saldo = somar(TIPO_RECEITA) - somar(TIPO_DESPESA)  #calcular o saldo disponível
 
     inicio_30_dias = date.today() - timedelta(days=30)
@@ -958,6 +1016,8 @@ def nova_movimentacao():
             return redirect(url_for("nova_movimentacao"))
 
         try:
+            # Se o texto não for um número (ex.: "abc"), converter_valor lança ValueError; o except coloca 0,
+            # e logo abaixo o "valor_numerico <= 0" rejeita com mensagem amigável.
             valor_numerico = converter_valor(valor)  # "1.234,56" -> 1234.56
         except (ValueError, AttributeError):
             valor_numerico = 0
@@ -981,7 +1041,9 @@ def nova_movimentacao():
             classificacao_numero = 2
             quantidade = 1  # variável: um único lançamento
 
-        tipo_numero = ( TIPO_RECEITA if categoria == "Receita" else TIPO_DESPESA)  #classificação de 1 e 2 
+        # Expressão condicional (if em uma linha): valor_se_verdadeiro if condição else valor_se_falso.
+        # Converte o texto "Receita"/"Despesa" para o número 1/0 que o banco guarda.
+        tipo_numero = ( TIPO_RECEITA if categoria == "Receita" else TIPO_DESPESA)  #classificação de 1 e 2
 
         con = conectar()
 
@@ -1026,6 +1088,8 @@ def nova_movimentacao():
             con.close()
 
         # guarda os dados na sessão para a tela de confirmação
+        # Guardamos na sessão porque o redirect abaixo cria uma NOVA requisição, que não enxerga as variáveis desta.
+        # (padrão Post/Redirect/Get: evita duplicar o lançamento se o usuário apertar F5.)
         session["ultima_movimentacao"] = {
             "valor_texto": formatar_reais(valor_numerico),
             "categoria": categoria,
@@ -1049,6 +1113,8 @@ def movimentacao_registrada():
     return render_template("movimentacao_registrada.html", dados=dados)
 
 
+# <int:id_mov> é uma parte variável da URL: /movimentacao/15 chama a função com id_mov = 15.
+# O "int:" garante que só números sejam aceitos (qualquer outra coisa gera erro 404 automaticamente).
 @app.route("/movimentacao/<int:id_mov>")
 def visualizar_movimentacao(id_mov):
     # mostra os detalhes de uma movimentação (<int:id_mov> vem da URL)
@@ -1154,6 +1220,8 @@ def excluir_movimentacao(id_mov):
 
                 # apaga só as que também têm o mesmo valor
                 for candidata in candidatas:
+                    # Compara o valor no Python (e não no SQL) para evitar problema de tipo/arredondamento do banco.
+                    # Só apaga as fixas com valor idêntico, preservando outra fixa de mesmo nome mas valor diferente.
                     if float(candidata[1]) == mov["valor"]:
                         cursor.execute(
                             """
@@ -1218,10 +1286,14 @@ def relatorio():
 
     if not movimentacoes_pdf:
         # sem dados: responde JSON com erro 404
+        # jsonify devolve a resposta em formato JSON (texto estruturado) e o ", 404" é o código HTTP
+        # "não encontrado". Usado aqui porque o relatório é um download, não uma página HTML.
         return jsonify({
             "erro": "Nenhuma movimentação encontrada no período."
         }), 404
 
+    # FPDF() cria um documento PDF vazio na memória. As linhas seguintes desenham nele:
+    # set_font define fonte/estilo/tamanho, cell desenha uma caixa de texto, ln() pula linha.
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=15)  # quebra de página automática
     pdf.add_page()
@@ -1318,6 +1390,8 @@ def relatorio():
     )
     pdf.output(pdf_path)
 
+    # send_file envia o PDF para o navegador. as_attachment=True força o DOWNLOAD (em vez de abrir na aba)
+    # e mimetype diz ao navegador que o conteúdo é um PDF.
     return send_file(
         pdf_path,
         as_attachment=True,
@@ -1333,6 +1407,8 @@ def converter_taxa(linha):
     # transforma a linha do banco em dicionário (mantém nomes duplicados "id"/"id_taxa_juros", "juros"/"taxa_mensal" para compatibilidade com os templates)
     data_referencia = linha[1]
 
+    # O banco pode devolver data com hora (datetime). .date() descarta a hora para ficar só com a data.
+    # isinstance(x, tipo) confere se o valor é daquele tipo.
     if isinstance(data_referencia, datetime):
         data_referencia = data_referencia.date()
 
@@ -1445,6 +1521,8 @@ def validar_dados_taxa(ano_texto, juros_texto):
         juros = float(juros_texto.strip().replace(",", "."))  # aceita vírgula decimal
 
     except (ValueError, TypeError, AttributeError):
+        # Converte o erro técnico (ex.: "invalid literal for int") em uma mensagem amigável.
+        # Quem chama esta função captura com "except ValueError as erro" e mostra str(erro) ao usuário.
         raise ValueError("Informe um ano e uma taxa válidos.")
 
     if ano < 1900 or ano > 9999:
@@ -1495,6 +1573,7 @@ def editar_taxa():
             flash("Taxa atualizada com sucesso!", "sucesso")
             return redirect(url_for("editar_taxa", ano=ano))
 
+        # "as erro" guarda o objeto do erro; str(erro) devolve o texto que foi escrito no raise ValueError("...").
         except ValueError as erro:
             flash(str(erro), "erro")  # mensagem vinda de validar_dados_taxa
             return redirect(url_for("editar_taxa"))
@@ -1556,6 +1635,7 @@ def cadastrar_taxa():
                 flash(f"Já existe uma taxa cadastrada para o ano {ano}.", "erro")
                 return render_template("cadastrar_taxas.html", taxa=taxa)
 
+            # O banco guarda uma data completa, então cada taxa anual usa 1º de janeiro do ano como referência.
             data_referencia = date(ano, 1, 1)
             conexao = conectar_banco()
 
@@ -1675,6 +1755,8 @@ def gerar_grafico_dashboard(id_usuario):
         })
 
     # dicionário (ano, mês) -> mês, para achar rápido onde somar cada registro
+    # Dicionário por compreensão: a chave é a tupla (ano, mês) e o valor é o próprio dicionário do mês.
+    # Serve para achar o mês de cada registro rapidamente: meses_por_chave[(2026, 11)].
     meses_por_chave = {(item["ano"], item["mes"]): item for item in meses}
     for registro in registros:
         data_mov = registro[0]
@@ -1682,6 +1764,7 @@ def gerar_grafico_dashboard(id_usuario):
             data_mov = data_mov.date()
         chave = (data_mov.year, data_mov.month)
         if chave in meses_por_chave:
+            # "or 0" protege caso o VALOR venha vazio (None), evitando erro ao converter.
             valor = float(registro[2] or 0)
             if registro[1] == TIPO_RECEITA:
                 meses_por_chave[chave]["receitas"] += valor
@@ -1689,6 +1772,8 @@ def gerar_grafico_dashboard(id_usuario):
                 meses_por_chave[chave]["despesas"] += valor
 
     # configura o gráfico pygal (tamanho, grades, cores)
+    # pygal.Bar cria um gráfico de barras. Os parâmetros ajustam altura, linhas de grade e legenda;
+    # o Style define cores (hex), fundo e animação. Cada .add() abaixo é uma série (um grupo de barras).
     grafico = pygal.Bar(
         height=330,
         x_label_rotation=0,
@@ -1751,6 +1836,7 @@ def dashboard():
             parcelas_futuras.append({"valor": valor, "data_objeto": vencimento})
 
         # soma só as parcelas que vencem em até 1 ano
+        # timedelta representa um intervalo de tempo; somar 365 dias à data de hoje dá o limite de 1 ano à frente.
         limite_anual = hoje + timedelta(days=365)
         for parcela in parcelas_futuras:
             if parcela["data_objeto"] <= limite_anual:
@@ -1774,6 +1860,8 @@ def dashboard():
         proxima_parcela_data = "Nenhuma parcela cadastrada"
 
     # estima a renda anual = (receitas - despesas do mês) x 12 e calcula quanto % dela está comprometido
+    # Estimativa simples: renda líquida do mês atual multiplicada por 12.
+    # O "if renda_anual_estimada > 0" abaixo evita divisão por zero ou percentual negativo.
     renda_anual_estimada = (somar_mes(TIPO_RECEITA) - somar_mes(TIPO_DESPESA)) * 12
     if renda_anual_estimada > 0:
         percentual_comprometimento_anual = formatar_reais(
@@ -1849,6 +1937,7 @@ def predio():
 
 def converter_valor(valor):
     # converte texto de dinheiro em float: "R$ 1.234,56" -> 1234.56
+    # Limpa o texto: tira espaços das pontas e remove "R$" e espaços internos, sobrando só números e separadores.
     valor = valor.strip().replace("R$", "").replace(" ", "")
 
     if "," in valor:
@@ -1861,12 +1950,17 @@ def converter_valor(valor):
 def gerar_parcelas(emprestimo):
     # cria a lista de parcelas mensais (número, vencimento, valor, status) a partir dos dados do empréstimo
     parcelas = []
+    # strptime faz o inverso do strftime: converte TEXTO ("13/11/2026") em objeto de data,
+    # seguindo o formato indicado (%d/%m/%Y).
     data = datetime.strptime(emprestimo["data"], "%d/%m/%Y")  # texto -> data
 
     quantidade = emprestimo["quantidade_parcelas"]
     valor_parcela = emprestimo["valor_parcela"]
 
     for numero in range(1, quantidade + 1):
+        # Soma "numero" meses ao mês da contratação. Como pode passar de 12, as duas linhas seguintes
+        # usam divisão inteira (//) para descobrir quantos anos avançar e resto (%) para o mês de 1 a 12.
+        # O "- 1" / "+ 1" existe porque os meses começam em 1, mas o resto da divisão começa em 0.
         mes_total = data.month + numero                 # primeira parcela vence 1 mês após a contratação
         ano = data.year + (mes_total - 1) // 12         # avança o ano quando passa de dezembro
         mes = (mes_total - 1) % 12 + 1
@@ -1879,6 +1973,8 @@ def gerar_parcelas(emprestimo):
             "vencimento": vencimento.strftime("%d/%m/%Y"),
             "valor": valor_parcela,
             "valor_formatado": "R$ " + formatar_reais(valor_parcela),
+            # Parcelas com número até "parcelas_pagas" nascem como Pago; as demais como Pendente.
+            # Em novos empréstimos parcelas_pagas é 0, então todas começam Pendentes.
             "status": (
                 "Pago"
                 if numero <= emprestimo.get("parcelas_pagas", 0)
@@ -1905,6 +2001,7 @@ def atualizar_parcelas_pendentes(cursor, id_emprestimo, id_usuario, taxa_valor):
     if not linha:
         return
 
+    # Se a taxa do empréstimo estiver vazia, usa a taxa atual para não dar erro nas contas.
     taxa_original = float(linha[1] or taxa_valor)
     saldo = float(linha[0] or 0)  # saldo devedor começa com o valor total emprestado
     cursor.execute("""
@@ -1918,14 +2015,19 @@ def atualizar_parcelas_pendentes(cursor, id_emprestimo, id_usuario, taxa_valor):
         if parcela[2] == "Pago":
             taxa_antiga = float(parcela[3]) if parcela[3] is not None else taxa_original
             juros = saldo * (taxa_antiga / 100)
+            # max(0, ...) impede que o saldo fique negativo por diferença de arredondamento.
             saldo = max(0, saldo - (float(parcela[1]) - juros))
 
+    # Filtra só as parcelas que ainda não foram pagas (coluna 2 = STATUS).
     pendentes = [p for p in parcelas if p[2] != "Pago"]
     quantidade = len(pendentes)
     mensal = taxa_valor / 100
     if quantidade == 0:
         return  # nada a recalcular
     # fórmula da Tabela Price: PMT = saldo * i / (1 - (1+i)^-n)
+    # Taxa zero (sem juros): a fórmula da Price daria divisão por zero (0/0), então usa divisão simples.
+    # Caso contrário aplica a Tabela Price: parcela = V * i / (1 - (1+i)^-n), onde V = valor emprestado,
+    # i = taxa mensal em decimal e n = número de parcelas. O "** (-n)" é potência negativa, igual a 1/(1+i)^n.
     if mensal == 0:
         valor_novo = round(saldo / quantidade, 2)
     else:
@@ -1969,6 +2071,9 @@ def historico_emprestimos():
 
     conexao = conectar_banco()
     cursor = conexao.cursor()
+    # JOIN liga tabelas: EMPRESTIMO (e) -> SIMULACAO (s) pelo ID_SIMULACAO, porque o dono do empréstimo (ID_USUARIO)
+    # e o valor/risco ficam na simulação. BETWEEN ? AND ? filtra datas dentro do intervalo (inclusive as pontas).
+    # "e" e "s" são apelidos (alias) das tabelas, para escrever menos.
     dados = []
     try:
         cursor.execute("""
@@ -1980,6 +2085,8 @@ def historico_emprestimos():
             ORDER BY e.DATA DESC, e.ID_EMPRESTIMO DESC
         """, (session["usuario_id"], data_inicio, data_fim))
         for linha in cursor.fetchall():
+            # Se for data de verdade formata dd/mm/aaaa; se vier como outro tipo, converte para texto com str()
+            # para a página nunca quebrar.
             data = linha[1].strftime("%d/%m/%Y") if isinstance(linha[1], (date, datetime)) else str(linha[1])
             dados.append({
                 "id": linha[0],
@@ -2098,6 +2205,8 @@ def visualizar_emprestimo(id_emprestimo):
                 "taxa": float(p[5]) if p[5] is not None else None,
                 "valor_formatado": "R$ " + formatar_reais(float(p[2] or 0))
             })
+        # Se for data de verdade formata dd/mm/aaaa; se vier como outro tipo, converte para texto com str()
+        # para a página nunca quebrar.
         data = linha[1].strftime("%d/%m/%Y") if isinstance(linha[1], (date, datetime)) else str(linha[1])
         # dicionário final com os mesmos nomes de chave usados em detalhes_emprestimos.html
         emprestimo = {
@@ -2213,6 +2322,8 @@ def pagar_parcela(id_parcela):
         # Atualiza os valores e a taxa somente das parcelas que ainda faltam.
         atualizar_parcelas_pendentes(cursor, parcela[0], session["usuario_id"], taxa_valor)
 
+        # NOT EXISTS (SELECT 1 ...) é verdadeiro quando NÃO há nenhuma parcela com status diferente de 'Pago'.
+        # O "SELECT 1" só testa existência (não importa qual coluna). Ou seja: todas pagas -> empréstimo Concluído.
         # se não sobrou nenhuma parcela não paga, o empréstimo vira "Concluído"
         cursor.execute("""
             UPDATE EMPRESTIMO SET STATUS = 'Concluído'
@@ -2300,6 +2411,8 @@ def emprestimo_realizado():
         if quantidade > 600:  # máximo de 600 parcelas
             raise ValueError
 
+        # O input type="date" do HTML envia o formato AAAA-MM-DD, por isso o strptime usa "%Y-%m-%d".
+        # Se o campo vier vazio, usa a data de hoje.
         if data:
             data_objeto = datetime.strptime(data, "%Y-%m-%d")  # formato do input type="date"
             data_str = data_objeto.strftime("%d/%m/%Y")
@@ -2313,6 +2426,8 @@ def emprestimo_realizado():
         if id_taxa_juros <= 0:
             raise ValueError
 
+    # ValueError: texto que não vira número/data | TypeError: valor None ou tipo errado
+    # OverflowError: número grande demais para a conta. Qualquer um dos três cai aqui.
     except (ValueError, TypeError, OverflowError):
         return "Dados inválidos. Confira os valores, a data e as parcelas.", 400
 
@@ -2335,9 +2450,17 @@ def emprestimo_realizado():
 
         id_taxa_juros = taxa_row[0]
         mensal = float(taxa_row[1]) / 100  # taxa em decimal (2% -> 0.02)
+        # Proteção da taxa antes de usar na fórmula:
+        #  - "mensal < 0": juros negativo não faz sentido.
+        #  - "math.isfinite(mensal)": False quando o número é NaN (não é número) ou infinito (inf).
+        #    Esses valores quebrariam a fórmula e gerariam resultado sem sentido, então "not isfinite" barra.
+        # Se qualquer condição for verdadeira, a taxa é considerada inválida e o cálculo não acontece.
         if mensal < 0 or not math.isfinite(mensal):
             raise ValueError("Taxa inválida.")
         # parcela pela Tabela Price (sem juros: divisão simples)
+        # Taxa zero (sem juros): a fórmula da Price daria divisão por zero (0/0), então usa divisão simples.
+        # Caso contrário aplica a Tabela Price: parcela = V * i / (1 - (1+i)^-n), onde V = valor emprestado,
+        # i = taxa mensal em decimal e n = número de parcelas. O "** (-n)" é potência negativa, igual a 1/(1+i)^n.
         if mensal == 0:
             valor_parcela = round(valor / quantidade, 2)
         else:
@@ -2347,11 +2470,14 @@ def emprestimo_realizado():
         renda = somar_mes(TIPO_RECEITA)
         despesas = somar_mes(TIPO_DESPESA)
         renda_liquida = renda - despesas
+        # Sem renda líquida positiva não há como calcular o comprometimento (evita divisão por zero/negativo).
         if renda_liquida <= 0:
             raise ValueError("A renda líquida precisa ser positiva.")
 
         # % da renda comprometida pela parcela define o risco: até 20% Baixo, até 35% Médio, acima Alto
         comprometimento = (valor_parcela / renda_liquida) * 100
+        # Classificação de risco pela parcela: até 20% da renda líquida = Baixo, até 35% = Médio, acima = Alto.
+        # Exemplo: parcela 300 e renda líquida 2000 -> 15% -> Baixo.
         if comprometimento <= 20:
             risco = "Baixo"
         elif comprometimento <= 35:
@@ -2375,6 +2501,9 @@ def emprestimo_realizado():
         )
 
         # Buscar o ID da simulação gravada
+        # Como o INSERT não devolve o ID gerado, pegamos o MAIOR ID do usuário (o último inserido).
+        # Funciona porque o ID cresce a cada inserção; o MAX(ID_EMPRESTIMO) mais abaixo não filtra por usuário,
+        # então teoricamente poderia pegar o de outra pessoa se dois empréstimos fossem criados ao mesmo tempo.
         cursor.execute("SELECT MAX(ID_SIMULACAO) FROM SIMULACAO WHERE ID_USUARIO = ?", (id_usuario,))
         id_simulacao = cursor.fetchone()[0]
 
@@ -2447,6 +2576,8 @@ def emprestimo_realizado():
         "parcelas_pagas": 0
     }
 
+    # O Flask só salva a sessão quando detecta mudança. Marcar modified = True garante que o dicionário
+    # "emprestimo" (aninhado) seja gravado no cookie.
     session.modified = True  # força o Flask a salvar a sessão alterada
 
     return redirect(url_for("detalhes_emprestimos"))
@@ -2470,6 +2601,8 @@ def simulacao():
         flash("Faça login para simular um empréstimo.", "erro")
         return redirect(url_for("login"))
 
+    # Padrão usado nesta rota: as variáveis começam como None e vão sendo preenchidas.
+    # Cada bloco abaixo só executa se "erro is None", ou seja, se nada deu errado até aqui (efeito cascata).
     erro = None       # mensagem de erro a exibir
     resultado = None  # dicionário com o resultado da simulação
     taxa = None
@@ -2486,6 +2619,7 @@ def simulacao():
     renda_liquida = renda - despesas
 
     # valida os dados enviados
+    # Só processa quando o formulário foi enviado (POST) e nenhum erro anterior foi registrado.
     if request.method == "POST" and erro is None:
         try:
             valor_texto = request.form.get("valor", "").strip()
@@ -2503,6 +2637,8 @@ def simulacao():
             elif renda_liquida <= 0:
                 erro = "Suas despesas cadastradas são iguais ou maiores que suas receitas deste mês."
 
+        # ValueError: texto que não vira número/data | TypeError: valor None ou tipo errado
+        # OverflowError: número grande demais para a conta. Qualquer um dos três cai aqui.
         except (ValueError, TypeError, OverflowError):
             erro = "Informe um valor de empréstimo e uma quantidade de parcelas válidos."
 
@@ -2515,23 +2651,34 @@ def simulacao():
             erro = "Não foi possível consultar as taxas no banco de dados."
 
     # calcula o resultado
+    # Só processa quando o formulário foi enviado (POST) e nenhum erro anterior foi registrado.
     if request.method == "POST" and erro is None:
         if taxa is None:
             erro = "Nenhuma taxa foi cadastrada no banco de dados."
         else:
             juros = taxa["juros"]
             mensal = juros / 100
+            # Proteção da taxa antes de usar na fórmula:
+            #  - "mensal < 0": juros negativo não faz sentido.
+            #  - "math.isfinite(mensal)": False quando o número é NaN (não é número) ou infinito (inf).
+            #    Esses valores quebrariam a fórmula e gerariam resultado sem sentido, então "not isfinite" barra.
+            # Se qualquer condição for verdadeira, a taxa é considerada inválida e o cálculo não acontece.
             if mensal < 0 or not math.isfinite(mensal):
                 erro = "A taxa cadastrada é inválida."
             else:
+                # Taxa zero (sem juros): a fórmula da Price daria divisão por zero (0/0), então usa divisão simples.
+                # Caso contrário aplica a Tabela Price: parcela = V * i / (1 - (1+i)^-n), onde V = valor emprestado,
+                # i = taxa mensal em decimal e n = número de parcelas. O "** (-n)" é potência negativa, igual a 1/(1+i)^n.
                 if mensal == 0:
                     parcela = valor / quantidade
                 else:
-                    parcela = valor * mensal / (1 - (1 + mensal) ** (-quantidade))  # Tabela Price
+                    parcela = valor * mensal / (1 - (1 + mensal) ** (-quantidade))  # Tabela
 
                 total = parcela * quantidade
                 comprometimento = (parcela / renda_liquida) * 100  # % da renda líquida usada pela parcela
 
+                # Classificação de risco pela parcela: até 20% da renda líquida = Baixo, até 35% = Médio, acima = Alto.
+                # Exemplo: parcela 300 e renda líquida 2000 -> 15% -> Baixo.
                 if comprometimento <= 20:
                     risco = "Baixo"
                 elif comprometimento <= 35:
@@ -2539,11 +2686,13 @@ def simulacao():
                 else:
                     risco = "Alto"
 
+                # Expressão que já devolve True/False: compara risco com "Alto" e guarda o resultado na variável.
                 alto_risco = risco == "Alto"
                 resultado = {
                     "valor": formatar_reais(valor),
                     "valor_original": round(valor, 2),
                     "parcelas": quantidade,
+                    # Mostra a taxa com 2 casas e vírgula decimal (2.5 -> "2,50") para o padrão brasileiro.
                     "juros": format(float(juros), ".2f").replace(".", ","),
                     "valor_parcela": formatar_reais(parcela),
                     "valor_parcela_original": round(parcela, 2),
@@ -2580,6 +2729,8 @@ def simulacao():
 @app.route("/admin/usuarios")
 def gerenciar_usuarios():
     # lista todos os usuários com contadores (total, ativos, bloqueados) - só administrador
+    # Proteção de acesso: se o tipo do usuário logado não for o de administrador, a rota é bloqueada.
+    # Sem sessão, .get devolve 0 (usuário comum), então visitantes também são barrados.
     if int(session.get("usuario_tipo", 0)) != TIPO_ADMIN:
         flash("Acesso permitido apenas para administradores.", "erro")
         return redirect(url_for("dashboard"))
@@ -2592,6 +2743,8 @@ def gerenciar_usuarios():
         """)
         usuarios = cursor.fetchall()
         total_usuarios = len(usuarios)
+        # sum(1 for ...) conta quantos itens atendem à condição (soma 1 para cada usuário que passa no filtro).
+        # usuario[4] = ATIVO e usuario[5] = BLOQUEADO.
         perfis_ativos = sum(1 for usuario in usuarios if usuario[4] and not usuario[5])  # ativo e não bloqueado
         perfis_bloqueados = sum(1 for usuario in usuarios if usuario[5])
     finally:
@@ -2606,6 +2759,8 @@ def gerenciar_usuarios():
 @app.route("/admin/usuarios/<int:id_usuario>", methods=["GET", "POST"])
 def editar_usuario_admin(id_usuario):
     # o administrador edita nome, e-mail, tipo, senha e foto de qualquer usuário
+    # Proteção de acesso: se o tipo do usuário logado não for o de administrador, a rota é bloqueada.
+    # Sem sessão, .get devolve 0 (usuário comum), então visitantes também são barrados.
     if int(session.get("usuario_tipo", 0)) != TIPO_ADMIN:
         return redirect(url_for("dashboard"))
 
@@ -2625,11 +2780,14 @@ def editar_usuario_admin(id_usuario):
             foto = request.files.get("foto")
             foto_nome = usuario[3]  # mantém a foto atual se nenhuma nova for enviada
 
+            # tipo vem do formulário como TEXTO; só aceitamos "1" (comum) ou "2" (admin) para impedir valores inventados.
             if not any(c.isalpha() for c in nome) or tipo not in ("1", "2"):
                 flash("Confira o nome e o tipo do usuário.", "erro")
             else:
                 # e-mail não pode pertencer a outro usuário
                 cursor.execute("SELECT ID_USUARIO FROM USUARIO WHERE EMAIL = ? AND ID_USUARIO <> ?", (email, id_usuario))
+                # fetchone() devolve a PRIMEIRA linha do resultado ou None se a consulta não achou nada.
+                # Se achou uma linha (valor "verdadeiro"), o e-mail já existe.
                 if cursor.fetchone():
                     flash("Este e-mail já está cadastrado.", "erro")
                 else:
@@ -2661,6 +2819,8 @@ def editar_usuario_admin(id_usuario):
                         """, (nome, email, int(tipo), foto_nome, id_usuario))
                     conexao.commit()
                     # se o admin editou a si mesmo, atualiza a sessão
+                    # Compara o usuário editado/excluído com o logado: o admin não pode se excluir (evita ficar sem acesso)
+                    # e, ao editar a si mesmo, a sessão precisa ser atualizada para refletir os novos dados.
                     if id_usuario == session.get("usuario_id"):
                         session["usuario_nome"] = nome
                         session["usuario_email"] = email
@@ -2681,8 +2841,12 @@ def editar_usuario_admin(id_usuario):
 @app.route("/admin/usuarios/<int:id_usuario>/excluir", methods=["POST"])
 def excluir_usuario_admin(id_usuario):
     # admin: se o usuário estiver bloqueado, DESBLOQUEIA; se não, exclui o usuário e seus dados
+    # Proteção de acesso: se o tipo do usuário logado não for o de administrador, a rota é bloqueada.
+    # Sem sessão, .get devolve 0 (usuário comum), então visitantes também são barrados.
     if int(session.get("usuario_tipo", 0)) != TIPO_ADMIN:
         return redirect(url_for("dashboard"))
+    # Compara o usuário editado/excluído com o logado: o admin não pode se excluir (evita ficar sem acesso)
+    # e, ao editar a si mesmo, a sessão precisa ser atualizada para refletir os novos dados.
     if id_usuario == session.get("usuario_id"):
         flash("Não é possível excluir sua própria conta por esta tela.", "erro")
         return redirect(url_for("gerenciar_usuarios"))
@@ -2730,6 +2894,9 @@ def excluir_usuario_admin(id_usuario):
 # EXECUÇÃO
 # ============================================================
 
+# __name__ vale "__main__" só quando o arquivo é executado direto (python app.py).
+# Se o arquivo for importado por outro, o servidor não sobe. debug=True reinicia ao salvar e mostra erros
+# detalhados no navegador - use só em desenvolvimento, nunca em produção.
 if __name__ == "__main__":
     # só roda o servidor se o arquivo for executado diretamente; debug=True recarrega sozinho e mostra erros detalhados
     app.run(debug=True)
