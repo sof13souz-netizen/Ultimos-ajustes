@@ -1273,131 +1273,117 @@ def texto_pdf(texto):
     return texto.decode("latin-1")
 
 
-@app.route("/relatorio", methods=["GET"])
-def relatorio():
-    # gera e baixa o PDF das movimentações do período escolhido
-    periodo = request.args.get("periodo", "ultimos")
+@app.route("/emprestimos/<int:id_emprestimo>/pdf")
+def pdf_emprestimo(id_emprestimo):
+    # relatório em PDF de UM empréstimo: dados do empréstimo + todas as parcelas
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
 
-    if periodo not in PERIODOS:
-        periodo = "ultimos"
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+    try:
+        # busca o empréstimo; o filtro por ID_USUARIO impede baixar o de outra pessoa
+        cursor.execute("""
+            SELECT e.ID_EMPRESTIMO, e.DATA, e.STATUS, s.VALOR_EMPRESTIMO,
+                   s.NUM_PARCELAS, s.VALOR_TOTAL, s.RISCO
+            FROM EMPRESTIMO e JOIN SIMULACAO s ON e.ID_SIMULACAO = s.ID_SIMULACAO
+            WHERE e.ID_EMPRESTIMO = ? AND s.ID_USUARIO = ?
+        """, (id_emprestimo, session["usuario_id"]))
+        emp = cursor.fetchone()
+        if not emp:
+            flash("Empréstimo não encontrado.", "erro")
+            return redirect(url_for("historico_emprestimos"))
 
-    data_inicio, data_fim = datas_do_periodo(periodo)
-    movimentacoes_pdf = buscar_movimentacoes(data_inicio, data_fim)
+        # reajusta as parcelas pendentes pela taxa do ano, igual à tela de detalhes,
+        # para o PDF mostrar os mesmos valores que o usuário vê
+        taxa_atual = buscar_taxa_por_ano(date.today().year)
+        if taxa_atual:
+            atualizar_parcelas_pendentes(cursor, id_emprestimo, session["usuario_id"], taxa_atual["juros"])
+            conexao.commit()
 
-    if not movimentacoes_pdf:
-        # sem dados: responde JSON com erro 404
-        # jsonify devolve a resposta em formato JSON (texto estruturado) e o ", 404" é o código HTTP
-        # "não encontrado". Usado aqui porque o relatório é um download, não uma página HTML.
-        return jsonify({
-            "erro": "Nenhuma movimentação encontrada no período."
-        }), 404
+        cursor.execute("""
+            SELECT NUM_PARCELAS, DATA_VENCIMENTO, VALOR, STATUS
+            FROM PARCELA WHERE ID_EMPRESTIMO = ? ORDER BY NUM_PARCELAS
+        """, (id_emprestimo,))
+        parcelas = cursor.fetchall()
+    finally:
+        cursor.close()
+        conexao.close()
 
-    # FPDF() cria um documento PDF vazio na memória. As linhas seguintes desenham nele:
-    # set_font define fonte/estilo/tamanho, cell desenha uma caixa de texto, ln() pula linha.
+    data_emprestimo = emp[1].strftime("%d/%m/%Y") if isinstance(emp[1], (date, datetime)) else str(emp[1])
+
     pdf = FPDF()
-    pdf.set_auto_page_break(auto=True, margin=15)  # quebra de página automática
+    pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
 
-    # título centralizado (cell: largura, altura, texto, ln=quebra linha, align=alinhamento)
-    pdf.set_font("Arial", style="B", size=16)
-    pdf.cell(
-        190, 10,
-        texto_pdf("Relatório de Movimentações - CredMais"),
-        ln=True,
-        align="C"
-    )
-
-    # subtítulo com período e data/hora de geração
+    # título e subtítulo (mesmo estilo dos outros relatórios)
+    pdf.set_font("Arial", "B", 16)
+    pdf.cell(190, 12, texto_pdf("Detalhes do Empréstimo - CredMais"), ln=True, align="C")
     pdf.set_font("Arial", size=10)
-    pdf.cell(
-        190, 8,
-        texto_pdf(
-            f"Período: {PERIODOS[periodo]} | "
-            f"Gerado em: {datetime.now().strftime('%d/%m/%Y %H:%M')}"
-        ),
-        ln=True,
-        align="C"
-    )
-
-    pdf.ln(5)  # espaço vertical
-    pdf.line(10, pdf.get_y(), 200, pdf.get_y())  # linha horizontal separadora
+    pdf.cell(190, 8, texto_pdf("Empréstimo nº " + str(emp[0]) + " | Gerado em " +
+                               datetime.now().strftime("%d/%m/%Y %H:%M")), ln=True, align="C")
+    pdf.ln(5)
+    pdf.line(10, pdf.get_y(), 200, pdf.get_y())
     pdf.ln(5)
 
-    # cabeçalho da tabela (border=1 desenha a borda)
-    pdf.set_font("Arial", style="B", size=10)
-    pdf.cell(30, 10, "Data", border=1)
-    pdf.cell(75, 10, texto_pdf("Descrição"), border=1)
-    pdf.cell(35, 10, "Categoria", border=1)
-    pdf.cell(50, 10, texto_pdf("Valor (R$)"), border=1, ln=True)
+    # bloco com os dados do empréstimo: rótulo à esquerda e valor à direita, cada linha com borda
+    pdf.set_font("Arial", "B", 11)
+    pdf.cell(190, 8, texto_pdf("Dados do empréstimo"), ln=True)
+    pdf.set_font("Arial", size=10)
+    dados = [
+        ("Data", data_emprestimo),
+        ("Valor emprestado", "R$ " + formatar_reais(float(emp[3] or 0))),
+        ("Número de parcelas", str(emp[4])),
+        ("Total a pagar", "R$ " + formatar_reais(float(emp[5] or 0))),
+        ("Risco", str(emp[6] or "-")),
+        ("Status", str(emp[2] or "Em andamento")),
+    ]
+    for rotulo, valor in dados:
+        pdf.cell(60, 8, texto_pdf(rotulo), border=1)
+        pdf.cell(130, 8, texto_pdf(valor), border=1, ln=True)
+    pdf.ln(8)
 
-    pdf.set_font("Arial", size=9)
-    total_receitas = 0
-    total_despesas = 0
+    # tabela de parcelas
+    def cabecalho_tabela():
+        pdf.set_font("Arial", "B", 10)
+        pdf.cell(25, 10, "Parcela", border=1)
+        pdf.cell(55, 10, "Vencimento", border=1)
+        pdf.cell(60, 10, "Valor", border=1)
+        pdf.cell(50, 10, "Status", border=1, ln=True)
+        pdf.set_font("Arial", size=9)
 
-    # uma linha da tabela por movimentação, acumulando os totais
-    for item in movimentacoes_pdf:
-        if item["categoria"] == "Receita":
-            total_receitas += item["valor"]
-            sinal = "+"
+    pdf.set_font("Arial", "B", 11)
+    pdf.cell(190, 8, texto_pdf("Parcelas"), ln=True)
+    cabecalho_tabela()
+
+    total_pago = 0
+    total_pendente = 0
+    for p in parcelas:
+        if pdf.get_y() > 265:          # perto do fim da página: nova página e repete o cabeçalho
+            pdf.add_page()
+            cabecalho_tabela()
+        valor = float(p[2] or 0)
+        status = p[3] or "Pendente"
+        if status == "Pago":
+            total_pago += valor
         else:
-            total_despesas += item["valor"]
-            sinal = "-"
+            total_pendente += valor
+        vencimento = p[1].strftime("%d/%m/%Y") if isinstance(p[1], (date, datetime)) else str(p[1])
+        pdf.cell(25, 10, str(p[0]), border=1)
+        pdf.cell(55, 10, vencimento, border=1)
+        pdf.cell(60, 10, texto_pdf("R$ " + formatar_reais(valor)), border=1)
+        pdf.cell(50, 10, texto_pdf(status), border=1, ln=True)
 
-        pdf.cell(30, 10, item["data_completa"], border=1)
-        pdf.cell(75, 10, texto_pdf(item["descricao"])[:38], border=1)  # corta a descrição em 38 caracteres
-        pdf.cell(35, 10, texto_pdf(item["categoria"]), border=1)
-        pdf.cell(
-            50, 10,
-            texto_pdf(f"{sinal} R$ {formatar_reais(item['valor'])}"),
-            border=1,
-            ln=True
-        )
+    # resumo final centralizado, como no relatório de movimentações
+    pdf.ln(8)
+    pdf.set_font("Arial", "B", 11)
+    pdf.cell(190, 10, texto_pdf("Total pago: R$ " + formatar_reais(total_pago)), ln=True, align="C")
+    pdf.cell(190, 10, texto_pdf("Total pendente: R$ " + formatar_reais(total_pendente)), ln=True, align="C")
 
-    # resumo final
-    pdf.ln(10)
-    pdf.set_font("Arial", style="B", size=11)
-    pdf.cell(
-        190, 10,
-        f"Total de movimentacoes: {len(movimentacoes_pdf)}",
-        ln=True,
-        align="C"
-    )
-    pdf.cell(
-        190, 10,
-        texto_pdf(f"Receitas: R$ {formatar_reais(total_receitas)}"),
-        ln=True,
-        align="C"
-    )
-    pdf.cell(
-        190, 10,
-        texto_pdf(f"Despesas: R$ {formatar_reais(total_despesas)}"),
-        ln=True,
-        align="C"
-    )
-    pdf.cell(
-        190, 10,
-        texto_pdf(
-            f"Saldo do período: R$ "
-            f"{formatar_reais(total_receitas - total_despesas)}"
-        ),
-        ln=True,
-        align="C"
-    )
-
-    # salva o PDF na pasta do projeto e envia ao navegador como download
-    pdf_path = os.path.join(
-        app.root_path, "relatorio_movimentacoes.pdf"
-    )
-    pdf.output(pdf_path)
-
-    # send_file envia o PDF para o navegador. as_attachment=True força o DOWNLOAD (em vez de abrir na aba)
-    # e mimetype diz ao navegador que o conteúdo é um PDF.
-    return send_file(
-        pdf_path,
-        as_attachment=True,
-        mimetype="application/pdf"
-    )
-
+    caminho = os.path.join(app.root_path, "emprestimo_" + str(id_emprestimo) + ".pdf")
+    pdf.output(caminho)
+    return send_file(caminho, as_attachment=True, mimetype="application/pdf",
+                     download_name="emprestimo_" + str(id_emprestimo) + ".pdf")
 
 # ============================================================
 # TAXAS DE JUROS
@@ -2626,7 +2612,7 @@ def simulacao():
             quantidade = int(parcelas_texto)
 
             if (not math.isfinite(valor) or valor <= 0 or
-                    quantidade < 1 or quantidade > 600):
+                    quantidade < 1 or quantidade > 60):
                 raise ValueError
 
             if renda <= 0:
