@@ -2405,7 +2405,7 @@ def emprestimo_realizado():
         if not cliente or valor <= 0 or quantidade < 1:
             raise ValueError
 
-        if quantidade > 600:  # máximo de 600 parcelas
+        if quantidade > 60:  # máximo de 60 parcelas
             raise ValueError
 
         # O input type="date" do HTML envia o formato AAAA-MM-DD, por isso o strptime usa "%Y-%m-%d".
