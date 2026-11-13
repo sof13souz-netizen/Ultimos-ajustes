@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CredMais</title>
+    <link rel="icon" type="image/png" href="../static/uploads/LogoSoloCrediMais.png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_dashboard.css') }}">
+
+    <script src="{{ url_for('static', filename='js/header.js') }}" defer></script>
+</head>
+
+<body>
+
+    <!-- CABEÇALHO -->
+    {% set pagina_ativa = 'dashboard' %}
+<header class="cabecalho-padrao">
+    <a href="{{ url_for('dashboard') }}" class="cabecalho-logo">
+        <img src="{{ url_for('static', filename='uploads/LogoSoloCrediMais.png') }}" alt="Logo CredMais" class="cabecalho-simbolo">
+        <span class="cabecalho-texto">
+            <span class="cabecalho-nome"><span class="nome-azul">Cred</span><span class="nome-verde">Mais</span></span>
+            <span class="cabecalho-slogan">Gestão de crédito para<br>pequenos negócios</span>
+        </span>
+    </a>
+    <nav class="cabecalho-menu">
+        <a href="{{ url_for('dashboard') }}" class="{% if pagina_ativa == 'dashboard' %}ativo{% endif %}">Dashboard</a>
+        {% if eh_admin %}<a href="{{ url_for('listar_taxas') }}" class="{% if pagina_ativa == 'taxas' %}ativo{% endif %}">Taxas</a>{% endif %}
+        <a href="{{ url_for('simulacao') }}" class="{% if pagina_ativa == 'simulacao' %}ativo{% endif %}">Simulação</a>
+        <a href="{{ url_for('historico_emprestimos') }}" class="{% if pagina_ativa == 'emprestimos' %}ativo{% endif %}">Empréstimos</a>
+        <a href="{{ url_for('movimentacoes') }}" class="{% if pagina_ativa == 'movimentacoes' %}ativo{% endif %}">Movimentações</a>
+    </nav>
+    {% if session.get('usuario_id') %}
+    <div class="cabecalho-usuario">
+        <button type="button" class="botao-perfil-header" onclick="alternarMenuPerfil()" aria-label="Abrir opções do perfil" aria-expanded="false">
+            <img class="foto-perfil-header" src="{{ url_for('static', filename='uploads/' ~ (session.get('usuario_foto') or 'perfil-padrao.png')) }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='uploads/perfil-padrao.png') }}'" alt="Foto de perfil">
+        </button>
+        <div class="dados-usuario">
+            <span class="nome-usuario-header">{{ session.get('usuario_nome', '') }}</span>
+            <span class="email-usuario-header">{{ session.get('usuario_email', '') }}</span>
+            <button type="button" class="seta-perfil-header" onclick="alternarMenuPerfil()" aria-label="Mostrar opções do perfil" aria-expanded="false">
+                <img src="{{ url_for('static', filename='uploads/seta_indicadora.png') }}" alt="">
+            </button>
+            <div class="menu-perfil-header" id="menuPerfilHeader">
+                <a href="{{ url_for('perfil') }}" class="botao-editar-perfil">Editar perfil</a>
+                <button type="button" class="botao-sair-header" onclick="abrirModal()">Sair</button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</header>
+
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main>
+
+        <!-- BOAS-VINDAS -->
+        <div class="inicio">
+
+            <div>
+                <h1>Olá, {{ session["usuario_nome"] }}!</h1>
+                <p>Seja bem-vindo ao CredMais.</p>
+            </div>
+
+
+            <!-- DATA ATUAL -->
+            <div class="data">
+                <p> Hoje, {{ data_atual }}</p>
+            </div>
+
+
+
+        </div>
+
+
+        <!-- CARDS DE INFORMAÇÕES -->
+        <div class="cards">
+
+            <!-- RENDA -->
+            <div class="card">
+
+                <div class="icone">
+                    <img src="/dinheiro" alt="Ícone de dinheiro">
+                </div>
+
+               <div>
+                    <h3>Renda Mensal Líquida</h3>
+                    <h2>R$ {{ renda_mensal_liquida }}</h2>
+                    <p>Receita de R$ {{ receita_total }}</p>
+               </div>
+
+            </div>
+
+
+            <!-- COMPROMETIMENTO -->
+            <div class="card">
+
+                <div class="icone">
+                    <img src="/check" alt="Ícone de comprometimento">
+                </div>
+
+                <div>
+                    <h3>Comprometimento Anual</h3>
+                    <h2>R$ {{ comprometimento_anual }}</h2>
+                    <p>{% if percentual_comprometimento_anual != '-' %}{{ percentual_comprometimento_anual }}% da renda anual estimada{% else %}Renda anual indisponível{% endif %}</p>
+                </div>
+
+            </div>
+
+
+            <!-- PARCELAS FUTURAS -->
+            <div class="card">
+
+                <div class="icone">
+                    <img src="/quadrado" alt="Ícone de parcelas">
+                </div>
+
+                <div>
+                    <h3>Parcelas Futuras</h3>
+                    <h2>R$ {{ parcelas_futuras }}</h2>
+                    <p>{{ quantidade_parcelas_futuras }} parcela(s) pendente(s)</p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ÁREA DE AÇÕES -->
+        <div class="acoes">
+            <div class="coluna-esquerda">
+                <div class="card-acao">
+                    <div class="icone"><img src="/calculadora" alt="Ícone de calculadora"></div>
+                    <div class="conteudo-acao">
+                        <h2>Simule um novo crédito</h2>
+                        <p>Veja a parcela, o comprometimento da renda e o risco antes de contratar.</p>
+                        <button type="button" class="simulacao" onclick="window.location.href='{{ url_for('simulacao') }}'">Simular empréstimo</button>
+                    </div>
+                </div>
+                <div class="card-acao2">
+                    <div class="icone"><img src="/escudo" alt="Ícone de escudo"></div>
+                    <div class="conteudo-acao2">
+                        <h2>Situação financeira</h2>
+                        <p>Veja suas receitas, despesas e movimentações.</p>
+                        <button type="button" class="situacao" onclick="window.location.href='{{ url_for('movimentacoes') }}'">Navegar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="coluna-direita">
+                <div class="card-parcela">
+                    <div class="icone"><img src="/predio" alt="Ícone de próxima parcela"></div>
+                    <div>
+                        <h3>Próxima Parcela</h3>
+                        <h2>R$ {{ proxima_parcela_valor }}</h2>
+                        <p>{{ proxima_parcela_data }}</p>
+                    </div>
+                </div>
+                {% if eh_admin %}
+                <div class="acoes-admin-sair">
+                    <a href="{{ url_for('gerenciar_usuarios') }}" class="card-sair card-gerenciar">
+                        <div>
+                            <div class="icone"><img src="{{ url_for('static', filename='uploads/gerenciar_usuarios.png') }}" alt="Ícone de gerenciar usuários"></div>
+                            <p>Gerenciar Usuários</p>
+                        </div>
+                    </a>
+                {% endif %}
+                <div class="card-sair" onclick="abrirModal()" role="button" tabindex="0"
+                     onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirModal(); }">
+                    <div>
+                        <div class="icone"><img src="/sair" alt="Ícone de sair"></div>
+                        <p>Sair da Conta</p>
+                    </div>
+                </div>
+                {% if eh_admin %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <section class="grafico-dashboard">
+            <div class="grafico-topo">
+                <h2>Receitas e despesas dos últimos 6 meses</h2>
+
+                <!-- Legenda: um item por série, com uma bolinha colorida e o nome -->
+                <ul class="legenda-grafico">
+                    <li><span class="bolinha bolinha-receita"></span>Receitas</li>
+                    <li><span class="bolinha bolinha-despesa"></span>Despesas</li>
+                </ul>
+            </div>
+            <img src="{{ svg }}" alt="Gráfico de receitas e despesas dos últimos seis meses">
+        </section>
+    </main>
+
+    <div class="fundo-modal" id="modalSair" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="tituloModalSair">
+        <div class="modal">
+            <div class="icone-sair"><img src="{{ url_for('static', filename='uploads/icone-sair.png') }}" alt="Ícone de sair"></div>
+            <h2 id="tituloModalSair">Deseja realmente sair?</h2>
+            <p>Suas informações serão mantidas.</p>
+            <div class="botoes-modal">
+                <button type="button" class="botao-sair" onclick="sairDaConta()">Sair</button>
+                <button type="button" class="botao-cancelar" onclick="fecharModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        // Chamada quando o usuário clica no botão do perfil ou na setinha (onclick="alternarMenuPerfil()").
+        function alternarMenuPerfil() {
+            // Menu suspenso que aparece/desaparece.
+            const menu = document.getElementById("menuPerfilHeader");
+
+            // Bloco com foto/nome do usuário, onde a setinha fica.
+            const dados = document.querySelector(".dados-usuario");
+
+            // Parte principal: toggle adiciona a classe "menu-aberto" se o menu não a tem e remove se já tem.
+            // Devolve true (acabou de abrir) ou false (acabou de fechar) e guarda em "aberto".
+            const aberto = menu.classList.toggle("menu-aberto");
+
+            // Aplica o MESMO estado ao bloco .dados-usuario.
+            // Com o segundo argumento, true força adicionar a classe e false força remover,
+            // então menu e dados nunca ficam dessincronizados.
+            // É essa classe no .dados-usuario que o CSS usa para mexer na setinha, por exemplo:
+            //   .dados-usuario.menu-aberto .seta-perfil-header { transform: rotate(180deg); }
+            // (o CSS é o que faz a seta virar para cima quando aberto e voltar para baixo quando fechado)
+            dados.classList.toggle("menu-aberto", aberto);
+
+            // Atualiza a acessibilidade do botão e da seta (para leitores de tela).
+            // aria-expanded diz se o menu controlado por eles está aberto ou fechado.
+            document.querySelectorAll(".botao-perfil-header, .seta-perfil-header").forEach(function(botao) {
+                botao.setAttribute("aria-expanded", aberto ? "true" : "false");
+            });
+        }
+
+        // ----- MODAL DE SAIR DA CONTA -----
+
+        // Mostra a janela de confirmação para sair (flex faz aparecer; no CSS ela começa escondida).
+        function abrirModal() { document.getElementById("modalSair").style.display = "flex"; }
+
+        // Esconde a janela de confirmação.
+        function fecharModal() { document.getElementById("modalSair").style.display = "none"; }
+
+        // Confirma a saída: vai para a rota /logout do Flask, que limpa a sessão.
+        // {{ url_for('logout') }} é Jinja: o Flask troca por "/logout" antes de enviar a página ao navegador.
+        function sairDaConta() { window.location.assign("{{ url_for('logout') }}"); }
+
+        // Clicar no fundo escuro (fora da caixa) fecha o modal.
+        // event.target é onde o clique aconteceu e "this" é o fundo do modal: se forem iguais, foi fora da caixa.
+        document.getElementById("modalSair").addEventListener("click", function(event) { if (event.target === this) fecharModal(); });
+
+        // Apertar Esc também fecha o modal.
+        document.addEventListener("keydown", function(event) { if (event.key === "Escape") fecharModal(); });
+
+    </script>
+
+<script>
+        // Ajusta o tamanho da letra dos títulos dos cards para textos longos não estourarem a caixa.
+        // Seleciona os títulos <h2> dentro de ".card" e de ".card-parcela" e percorre cada um.
+        document.querySelectorAll(".card h2, .card-parcela h2").forEach(function(texto) {
+            // textContent.length é a quantidade de caracteres do título (ex.: "R$ 1.234.567,89").
+            if (texto.textContent.length > 18) {
+                // Mais de 18 caracteres: letra bem pequena (14px).
+                texto.style.fontSize = "14px";
+            } else if (texto.textContent.length > 13) {
+                // De 14 a 18 caracteres: letra média (17px).
+                texto.style.fontSize = "17px";
+            }
+            // Até 13 caracteres: não muda nada, vale o tamanho definido no CSS.
+        });
+</script>
+</body>
+
+</html>

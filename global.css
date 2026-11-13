@@ -1,0 +1,467 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --azul: #1A67F5;
+    --azul-hover: #1456D3;
+    --azul-escuro: #0F2F73;
+    --azul-claro: #D1E3FF;
+    --verde: #40BE76;
+    --verde-hover: #2FA866;
+    --verde-claro: #DDF5E7;
+    --vermelho: #F44A4D;
+    --vermelho-claro: #FDEBEC;
+    --fundo: #F6F9FD;
+    --cinza-claro: #E6ECF4;
+    --cinza-texto: #6B7DA8;
+    --branco: #FFFFFF;
+    --borda: #DCE5F2;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', Arial, sans-serif;
+}
+
+button {
+    cursor: pointer;
+    font-family: inherit;
+    transition: background-color .18s ease, color .18s ease, transform .18s ease;
+}
+
+.cabecalho-padrao {
+    width: 100%;
+    min-height: 78px;
+    padding: 10px 3.5%;
+    background: var(--branco);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    box-shadow: 0 2px 6px rgba(15, 47, 115, .10);
+    position: relative;
+    z-index: 20;
+}
+
+.cabecalho-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.cabecalho-simbolo {
+    display: block;
+    width: auto;
+    height: 54px;
+    object-fit: contain;
+}
+
+.cabecalho-texto {
+    display: flex;
+    flex-direction: column;
+}
+
+.cabecalho-nome {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.nome-azul {
+    color: var(--azul);
+}
+
+.nome-verde {
+    color: var(--verde);
+}
+
+.cabecalho-slogan {
+    margin-top: 4px;
+    color: var(--cinza-texto);
+    font-size: 10px;
+    line-height: 1.25;
+}
+
+.cabecalho-menu {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.cabecalho-menu a {
+    padding: 9px 0;
+    color: var(--azul-escuro);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    position: relative;
+}
+
+.cabecalho-menu a:hover,
+.cabecalho-menu a.ativo {
+    color: var(--azul);
+}
+
+.cabecalho-menu a::after {
+    content: '';
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: var(--azul);
+    border-radius: 2px;
+}
+
+.cabecalho-menu a.ativo::after {
+    display: block;
+}
+
+.cabecalho-usuario {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-shrink: 0;
+}
+
+.botao-perfil-header {
+    order: 0;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.botao-perfil-header:hover {
+    background: transparent;
+}
+
+.foto-perfil-header {
+    display: block;
+    width: 43px;
+    height: 43px;
+    border: 2px solid var(--cinza-claro);
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.dados-usuario {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 18px;
+    grid-template-rows: auto auto;
+    align-items: center;
+    column-gap: 7px;
+}
+
+.nome-usuario-header {
+    grid-column: 1;
+    color: var(--azul-escuro);
+    font-size: 14px;
+    font-weight: 700;
+    max-width: 175px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.email-usuario-header {
+    grid-column: 1;
+    color: var(--cinza-texto);
+    font-size: 11px;
+    max-width: 175px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.seta-perfil-header {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    justify-self: center;
+    cursor: pointer;
+}
+
+.seta-perfil-header img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.2s;
+}
+
+/* seta gira. O seletor só vale quando o .dados-usuario tem a classe
+   "menu-aberto", e o JavaScript liga essa classe ao clicar. Nesse caso a imagem
+   da seta é girada 180 graus (de cabeça para baixo). */
+.dados-usuario.menu-aberto .seta-perfil-header img {
+    transform: rotate(180deg);
+}
+
+.seta-perfil-header:hover {
+    background: transparent;
+}
+
+.menu-perfil-header {
+    display: none;
+    position: absolute;
+    top: calc(100% + 12px);
+    right: -4px;
+    z-index: 30;
+    min-width: 190px;
+    padding: 10px;
+    background: var(--branco);
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(15, 47, 115, .15);
+}
+
+.menu-perfil-header.menu-aberto {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+
+.botao-editar-perfil,
+.botao-sair-header {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 7px;
+    background: var(--cinza-claro);
+    color: var(--azul-escuro);
+    text-align: center;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.botao-editar-perfil:hover,
+.botao-sair-header:hover {
+    background: #D5DDE8;
+    color: var(--azul-escuro);
+}
+
+.fundo-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(20, 30, 50, .45);
+}
+
+.fundo-modal .modal {
+    width: 100%;
+    max-width: 360px;
+    padding: 28px;
+    background: var(--branco);
+    border-radius: 14px;
+    text-align: center;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, .13);
+}
+
+.fundo-modal .botoes-modal {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.fundo-modal button {
+    padding: 10px 20px;
+    border: 0;
+    border-radius: 7px;
+}
+
+.fundo-modal .botao-sair {
+    background: var(--vermelho);
+    color: var(--branco);
+}
+
+.fundo-modal .botao-sair:hover {
+    background: #D9363B;
+}
+
+.fundo-modal .botao-cancelar {
+    background: var(--cinza-claro);
+    color: var(--azul-escuro);
+}
+
+.fundo-modal .botao-cancelar:hover {
+    background: #D5DDE8;
+}
+
+@media (max-width: 1100px) {
+    .cabecalho-menu {
+        gap: 14px;
+    }
+
+    .nome-usuario-header,
+    .email-usuario-header {
+        max-width: 125px;
+    }
+}
+
+@media (max-width: 800px) {
+    .cabecalho-padrao {
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 12px 4%;
+    }
+
+    .cabecalho-logo {
+        margin-right: auto;
+    }
+
+    .cabecalho-menu {
+        order: 3;
+        flex-basis: 100%;
+        justify-content: center;
+        gap: 16px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+    }
+
+    .cabecalho-menu a {
+        font-size: 12px;
+    }
+
+    .cabecalho-usuario {
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .cabecalho-simbolo {
+        height: 43px;
+    }
+
+    .cabecalho-nome {
+        font-size: 20px;
+    }
+
+    .cabecalho-slogan {
+        font-size: 9px;
+    }
+
+    .foto-perfil-header {
+        width: 36px;
+        height: 36px;
+    }
+
+    .nome-usuario-header {
+        max-width: 115px;
+        font-size: 12px;
+    }
+
+    .email-usuario-header {
+        max-width: 115px;
+        font-size: 10px;
+    }
+}
+
+/* Menu recolhido para celulares */
+.botao-menu-mobile { display: none; }
+@media (max-width: 800px) {
+    .cabecalho-padrao {
+        min-height: 72px;
+        height: 72px;
+        padding: 8px 16px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+    .cabecalho-logo {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        margin: 0;
+    }
+    .cabecalho-simbolo { height: 48px; }
+    .cabecalho-texto { display: none; }
+    .botao-menu-mobile {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 42px;
+        height: 42px;
+        padding: 5px;
+        border: 0;
+        border-radius: 7px;
+        background: transparent;
+        z-index: 25;
+    }
+    .botao-menu-mobile img { width: 100%; height: 100%; object-fit: contain; }
+    .cabecalho-menu {
+        display: none;
+        position: absolute;
+        top: 72px;
+        left: 0;
+        right: 0;
+        width: 100%;
+        padding: 12px 16px 18px;
+        background: #fff;
+        box-shadow: 0 8px 14px rgba(15,47,115,.13);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        overflow: visible;
+        z-index: 24;
+    }
+    .cabecalho-menu.menu-mobile-aberto { display: flex; }
+    .cabecalho-menu .cabecalho-usuario {
+        order: -1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        padding: 8px 0 14px;
+        margin: 0;
+    }
+    .cabecalho-menu .botao-perfil-header { justify-content: center; }
+    .cabecalho-menu .dados-usuario { display: flex; flex-direction: column; align-items: center; }
+    .cabecalho-menu .seta-perfil-header { display: none; }
+    .cabecalho-menu .menu-perfil-header { position: static; padding: 5px 0 0; box-shadow: none; border: 0; }
+    .cabecalho-menu > a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 48px;
+        margin: 0;
+        padding: 12px;
+        border-radius: 7px;
+        color: #30343b;
+        font-size: 14px;
+        background: #e8e8e8;
+        text-align: center;
+    }
+    .cabecalho-menu > a:nth-of-type(even) { background: #c9c9c9; }
+    .cabecalho-menu > a:hover, .cabecalho-menu > a.ativo { background: #1769f5; color: #fff; }
+    .cabecalho-menu > a::after { display: none; }
+}

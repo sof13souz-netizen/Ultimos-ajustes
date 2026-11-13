@@ -1748,11 +1748,8 @@ def gerar_grafico_dashboard(id_usuario):
     for i in range(6):
         total_meses = primeiro_mes + i
         ano = total_meses // 12
-        mes = total_meses % 12 + 1
-        meses.append({
-            "ano": ano, "mes": mes, "nome": f"{mes:02d}/{ano}",
-            "receitas": 0.0, "despesas": 0.0
-        })
+        mes = total_meses % 12 + 1   #
+        meses.append({"ano": ano, "mes": mes, "nome": f"{mes:02d}/{ano}","receitas": 0.0, "despesas": 0.0})
 
     # dicionário (ano, mês) -> mês, para achar rápido onde somar cada registro
     # Dicionário por compreensão: a chave é a tupla (ano, mês) e o valor é o próprio dicionário do mês.
@@ -1786,7 +1783,7 @@ def gerar_grafico_dashboard(id_usuario):
             foreground="#59677D",
             foreground_strong="#153779",
             foreground_subtle="#E8EDF5",
-            colors=("#1768F9", "#16A879"),  # azul = receitas, verde = despesas
+            colors=("#16A879", "#F44A4D"),  # azul = receitas, verde = despesas
             opacity=0.95,
             opacity_hover=1,
             transition="400ms"
