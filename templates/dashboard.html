@@ -178,7 +178,15 @@
             </div>
         </div>
         <section class="grafico-dashboard">
-            <h2>Receitas e despesas dos últimos 6 meses</h2>
+            <div class="grafico-topo">
+                <h2>Receitas e despesas dos últimos 6 meses</h2>
+
+                <!-- Legenda: um item por série, com uma bolinha colorida e o nome -->
+                <ul class="legenda-grafico">
+                    <li><span class="bolinha bolinha-receita"></span>Receitas</li>
+                    <li><span class="bolinha bolinha-despesa"></span>Despesas</li>
+                </ul>
+            </div>
             <img src="{{ svg }}" alt="Gráfico de receitas e despesas dos últimos seis meses">
         </section>
     </main>
@@ -195,34 +203,69 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT -->
     <script>
 
+        // Chamada quando o usuário clica no botão do perfil ou na setinha (onclick="alternarMenuPerfil()").
         function alternarMenuPerfil() {
+            // Menu suspenso que aparece/desaparece.
             const menu = document.getElementById("menuPerfilHeader");
+
+            // Bloco com foto/nome do usuário, onde a setinha fica.
             const dados = document.querySelector(".dados-usuario");
+
+            // Parte principal: toggle adiciona a classe "menu-aberto" se o menu não a tem e remove se já tem.
+            // Devolve true (acabou de abrir) ou false (acabou de fechar) e guarda em "aberto".
             const aberto = menu.classList.toggle("menu-aberto");
+
+            // Aplica o MESMO estado ao bloco .dados-usuario.
+            // Com o segundo argumento, true força adicionar a classe e false força remover,
+            // então menu e dados nunca ficam dessincronizados.
+            // É essa classe no .dados-usuario que o CSS usa para mexer na setinha, por exemplo:
+            //   .dados-usuario.menu-aberto .seta-perfil-header { transform: rotate(180deg); }
+            // (o CSS é o que faz a seta virar para cima quando aberto e voltar para baixo quando fechado)
             dados.classList.toggle("menu-aberto", aberto);
+
+            // Atualiza a acessibilidade do botão e da seta (para leitores de tela).
+            // aria-expanded diz se o menu controlado por eles está aberto ou fechado.
             document.querySelectorAll(".botao-perfil-header, .seta-perfil-header").forEach(function(botao) {
                 botao.setAttribute("aria-expanded", aberto ? "true" : "false");
             });
         }
 
+        // ----- MODAL DE SAIR DA CONTA -----
+
+        // Mostra a janela de confirmação para sair (flex faz aparecer; no CSS ela começa escondida).
         function abrirModal() { document.getElementById("modalSair").style.display = "flex"; }
+
+        // Esconde a janela de confirmação.
         function fecharModal() { document.getElementById("modalSair").style.display = "none"; }
+
+        // Confirma a saída: vai para a rota /logout do Flask, que limpa a sessão.
+        // {{ url_for('logout') }} é Jinja: o Flask troca por "/logout" antes de enviar a página ao navegador.
         function sairDaConta() { window.location.assign("{{ url_for('logout') }}"); }
+
+        // Clicar no fundo escuro (fora da caixa) fecha o modal.
+        // event.target é onde o clique aconteceu e "this" é o fundo do modal: se forem iguais, foi fora da caixa.
         document.getElementById("modalSair").addEventListener("click", function(event) { if (event.target === this) fecharModal(); });
+
+        // Apertar Esc também fecha o modal.
         document.addEventListener("keydown", function(event) { if (event.key === "Escape") fecharModal(); });
 
     </script>
 
 <script>
+        // Ajusta o tamanho da letra dos títulos dos cards para textos longos não estourarem a caixa.
+        // Seleciona os títulos <h2> dentro de ".card" e de ".card-parcela" e percorre cada um.
         document.querySelectorAll(".card h2, .card-parcela h2").forEach(function(texto) {
+            // textContent.length é a quantidade de caracteres do título (ex.: "R$ 1.234.567,89").
             if (texto.textContent.length > 18) {
+                // Mais de 18 caracteres: letra bem pequena (14px).
                 texto.style.fontSize = "14px";
             } else if (texto.textContent.length > 13) {
+                // De 14 a 18 caracteres: letra média (17px).
                 texto.style.fontSize = "17px";
             }
+            // Até 13 caracteres: não muda nada, vale o tamanho definido no CSS.
         });
 </script>
 </body>

@@ -83,22 +83,22 @@
         <div class="botoes-modal"><button type="button" class="botao-sair" onclick="sairDaConta()">Sair</button><button type="button" class="botao-cancelar" onclick="fecharModal()">Cancelar</button></div>
     </div>
 </div>
-<script>
-function alternarMenuPerfil() {
-    const menu = document.getElementById("menuPerfilHeader");
-    const dados = document.querySelector(".dados-usuario");
-    const aberto = menu.classList.toggle("menu-aberto");
-    dados.classList.toggle("menu-aberto", aberto);
-    document.querySelectorAll(".botao-perfil-header, .seta-perfil-header").forEach(function(botao) {
-        botao.setAttribute("aria-expanded", aberto ? "true" : "false");
-    });
-}
-function abrirModal() { document.getElementById("modalSair").style.display = "flex"; }
-function fecharModal() { document.getElementById("modalSair").style.display = "none"; }
-function sairDaConta() { window.location.assign("{{ url_for('logout') }}"); }
-document.getElementById("modalSair").addEventListener("click", function(event) { if (event.target === this) fecharModal(); });
-document.addEventListener("keydown", function(event) { if (event.key === "Escape") fecharModal(); });
-</script>
+    <script>
+    function alternarMenuPerfil() {
+        const menu = document.getElementById("menuPerfilHeader");
+        const dados = document.querySelector(".dados-usuario");
+        const aberto = menu.classList.toggle("menu-aberto");
+        dados.classList.toggle("menu-aberto", aberto);
+        document.querySelectorAll(".botao-perfil-header, .seta-perfil-header").forEach(function(botao) {
+            botao.setAttribute("aria-expanded", aberto ? "true" : "false");
+        });
+    }
+    function abrirModal() { document.getElementById("modalSair").style.display = "flex"; }
+    function fecharModal() { document.getElementById("modalSair").style.display = "none"; }
+    function sairDaConta() { window.location.assign("{{ url_for('logout') }}"); }
+    document.getElementById("modalSair").addEventListener("click", function(event) { if (event.target === this) fecharModal(); });
+    document.addEventListener("keydown", function(event) { if (event.key === "Escape") fecharModal(); });
+    </script>
 
 </body>
 </html>

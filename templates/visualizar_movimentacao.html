@@ -109,31 +109,76 @@
         <div class="botoes-modal"><button type="button" class="botao-sair" onclick="sairDaConta()">Sair</button><button type="button" class="botao-cancelar" onclick="fecharModal()">Cancelar</button></div>
     </div>
 </div>
-<script>
-function alternarMenuPerfil() {
-    const menu = document.getElementById("menuPerfilHeader");
-    const dados = document.querySelector(".dados-usuario");
-    const aberto = menu.classList.toggle("menu-aberto");
-    dados.classList.toggle("menu-aberto", aberto);
-    document.querySelectorAll(".botao-perfil-header, .seta-perfil-header").forEach(function(botao) {
-        botao.setAttribute("aria-expanded", aberto ? "true" : "false");
-    });
-}
-function abrirModalExclusao() { document.getElementById("modal-excluir-movimentacao").style.display = "flex"; }
-function fecharModalExclusao() { document.getElementById("modal-excluir-movimentacao").style.display = "none"; }
-function confirmarExclusaoMovimentacao() { document.getElementById("form-excluir-movimentacao").submit(); }
-document.getElementById("modal-excluir-movimentacao").addEventListener("click", function(event) {
-    if (event.target === this) fecharModalExclusao();
-});
-document.addEventListener("keydown", function(event) {
-    if (event.key === "Escape") fecharModalExclusao();
-});
-function abrirModal() { document.getElementById("modalSair").style.display = "flex"; }
-function fecharModal() { document.getElementById("modalSair").style.display = "none"; }
-function sairDaConta() { window.location.assign("{{ url_for('logout') }}"); }
-document.getElementById("modalSair").addEventListener("click", function(event) { if (event.target === this) fecharModal(); });
-document.addEventListener("keydown", function(event) { if (event.key === "Escape") fecharModal(); });
-</script>
+    <script>
+        // Abre e fecha o menu do perfil que fica no cabeçalho (foto/nome do usuário).
+        function alternarMenuPerfil() {
+            // Pega o menu suspenso pelo id.
+            const menu = document.getElementById("menuPerfilHeader");
+
+            // Pega o bloco com os dados do usuário (nome/foto) pela classe.
+            const dados = document.querySelector(".dados-usuario");
+
+            // classList.toggle adiciona a classe "menu-aberto" se não existir e remove se existir.
+            // Ele devolve true (agora está aberto) ou false (agora está fechado) e guarda em "aberto".
+            const aberto = menu.classList.toggle("menu-aberto");
+
+            // Aplica o mesmo estado ao bloco de dados do usuário.
+            // O segundo argumento força a classe: com true adiciona, com false remove.
+            // Assim os dois elementos ficam sempre sincronizados (usado pelo CSS, por exemplo para girar a seta).
+            dados.classList.toggle("menu-aberto", aberto);
+
+            // Seleciona o botão do perfil e a seta (querySelectorAll aceita vários seletores separados por vírgula)
+            // e percorre cada um.
+            document.querySelectorAll(".botao-perfil-header, .seta-perfil-header").forEach(function(botao) {
+                // aria-expanded informa aos leitores de tela se o menu está aberto ("true") ou fechado ("false").
+                botao.setAttribute("aria-expanded", aberto ? "true" : "false");
+            });
+        }
+
+        // EXCLUIR MOVIMENTAÇÃO
+
+        // Mostra a janela de confirmação. "flex" faz o modal aparecer (no CSS ele começa com display none).
+        function abrirModalExclusao() { document.getElementById("modal-excluir-movimentacao").style.display = "flex"; }
+
+        // Esconde a janela de confirmação (botão "Cancelar").
+        function fecharModalExclusao() { document.getElementById("modal-excluir-movimentacao").style.display = "none"; }
+
+        // Botão "Sim, excluir": envia o formulário escondido (POST em /movimentacao/<id>/excluir no Flask).
+        // O envio só acontece depois da confirmação do usuário.
+        function confirmarExclusaoMovimentacao() { document.getElementById("form-excluir-movimentacao").submit(); }
+
+        // Fecha o modal ao clicar FORA da caixa branca (no fundo escuro).
+        document.getElementById("modal-excluir-movimentacao").addEventListener("click", function(event) {
+            // event.target é o elemento que recebeu o clique e "this" é o fundo do modal.
+            // Se forem o mesmo, o clique foi no fundo; se fosse dentro da caixa, o alvo seria outro elemento.
+            if (event.target === this) fecharModalExclusao();
+        });
+
+        // Fecha o modal ao apertar a tecla Esc.
+        // O evento fica no document inteiro porque o teclado não tem "alvo" específico.
+        document.addEventListener("keydown", function(event) {
+            if (event.key === "Escape") fecharModalExclusao();
+        });
+
+        // SAIR DA CONTA
+
+        // Mostra a janela "Deseja sair?".
+        function abrirModal() { document.getElementById("modalSair").style.display = "flex"; }
+
+        // Esconde a janela "Deseja sair?".
+        function fecharModal() { document.getElementById("modalSair").style.display = "none"; }
+
+        // Confirma a saída: navega para a rota /logout do Flask, que limpa a sessão.
+        // {{ url_for('logout') }} NÃO é JavaScript: é Jinja, e o Flask troca por "/logout" antes de enviar a página.
+        // Por isso este script precisa estar dentro do HTML (template) e não em um arquivo .js separado.
+        function sairDaConta() { window.location.assign("{{ url_for('logout') }}"); }
+
+        // Mesma ideia do modal de exclusão: clicar no fundo fecha o modal de sair.
+        document.getElementById("modalSair").addEventListener("click", function(event) { if (event.target === this) fecharModal(); });
+
+        // Esc também fecha o modal de sair.
+        document.addEventListener("keydown", function(event) { if (event.key === "Escape") fecharModal(); });
+        </script>
 
 </body>
 </html>
